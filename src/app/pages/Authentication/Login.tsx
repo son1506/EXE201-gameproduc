@@ -24,12 +24,6 @@ const Login: React.FC = () => {
           >
             Sign up
           </Link>
-          <button
-            className="w-28 py-2 rounded-lg bg-pink-600 text-white font-semibold hover:bg-pink-700 transition"
-            aria-pressed="true"
-          >
-            Log in
-          </button>
         </div>
 
         <div className="space-y-6">
