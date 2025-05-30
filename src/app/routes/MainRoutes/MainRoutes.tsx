@@ -1,23 +1,26 @@
-import { Navigate, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import NotFound from "../../components/NotFound";
 import AdminLayout from "../../layouts/AdminLayout/AdminLayout";
 import MainLayout from "../../layouts/MainLayout/MainLayout";
 import Dashboard from "../../pages/Admin/Dashboard/Dashboard";
 import Login from "../../pages/Authentication/Login";
-import Register from "../../pages/Authentication/Register";
-import Home from "../../pages/Customer/Home/Home";
 
+import Home from "../../pages/services/Home";
+import UserLayout from "../../layouts/UserLayout";
+import SignUp from "../../pages/Authentication/SignUp";
 const MainRoutes = () => {
   return (
+
     <Routes>
-      <Route path="/">
-        <Route path="/" element={<MainLayout />}>
-          <Route path="/" element={<Home />} />
-        </Route>
+      <Route element={<UserLayout />}>
+        <Route path="/" element={<Home />} />
+        {/* <Route path="/about" element={<AboutUs />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} /> */}
       </Route>
 
       <Route path="login" element={<Login />} />
-      <Route path="register" element={<Register />} />
+      <Route path="signup" element={<SignUp />} />
 
       <Route path="" element={<AdminLayout />}>
         <Route path="" element={<Navigate to="/dashboard" />} />
@@ -26,6 +29,7 @@ const MainRoutes = () => {
 
       <Route path="*" element={<NotFound />} />
     </Routes>
+
   );
 };
 
