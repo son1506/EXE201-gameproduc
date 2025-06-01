@@ -8,6 +8,7 @@ import Login from "../../pages/Authentication/Login";
 import Home from "../../pages/services/Home";
 import UserLayout from "../../layouts/UserLayout";
 import SignUp from "../../pages/Authentication/SignUp";
+import VerifyRegisterPage from "@/app/pages/Authentication/VerifyPage";
 const MainRoutes = () => {
   return (
 
@@ -21,6 +22,7 @@ const MainRoutes = () => {
 
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<SignUp />} />
+      <Route path="verify-register" element={<VerifyRegisterPage />} />
 
       <Route path="" element={<AdminLayout />}>
         <Route path="" element={<Navigate to="/dashboard" />} />
