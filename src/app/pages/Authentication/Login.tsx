@@ -1,34 +1,31 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import loginAccount from "../../modules/Authentication/loginAccount";
+import loginAccount from "../../modules/Authentication/loginAccount"; // Ensure this path is correct
 import Cookies from "js-cookie";
-import { message } from "antd"; // Ant Design toast
+import { message } from "antd";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-const handleLogin = async () => {
-  try {
-    const result = await loginAccount(email, password);
+  // Move handleLogin inside the component
+  const handleLogin = async () => {
+    try {
+      const result = await loginAccount(email, password);
 
-    if (result.token) {
-      Cookies.set("__atok", result.token);
-      message.success("Login successful!");
+      // Assuming the response contains a token
+      if (result.token) {
+        Cookies.set("__atok", result.token);
+      }
+
       navigate("/");
-    } else {
-      message.error("Login failed: No token received.");
+      message.success("Login successful"); // Fix the message text
+    } catch (error) {
+      // Since the error is handled in loginAccount, you might still want to show a failure message
+      message.error("Login failed. Please try again.");
     }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      message.error(error.message);
-    } else {
-      message.error("An unexpected error occurred.");
-    }
-  }
-};
-
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-pink-200 via-pink-100 to-white">
@@ -68,6 +65,17 @@ const handleLogin = async () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full p-3 rounded-md border border-pink-300 bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-400"
           />
+          
+          {/* Forgot Password Link */}
+          <div className="text-right">
+            <Link 
+              to="/forgot-password" 
+              className="text-sm text-pink-600 hover:text-pink-800 hover:underline transition"
+            >
+              Forgot your password?
+            </Link>
+          </div>
+
           <button
             onClick={handleLogin}
             className="w-full py-3 bg-pink-600 text-white font-bold rounded-md hover:bg-pink-700 transition"
@@ -87,4 +95,4 @@ const handleLogin = async () => {
   );
 };
 
-export default Login;
+export default Login; 

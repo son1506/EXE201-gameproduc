@@ -9,6 +9,8 @@ import Home from "../../pages/services/Home";
 import UserLayout from "../../layouts/UserLayout";
 import SignUp from "../../pages/Authentication/SignUp";
 import VerifyRegisterPage from "@/app/pages/Authentication/VerifyPage";
+import ForgotPassword from "@/app/pages/Authentication/ForgetPassword/ForgetPassword";
+import ResetPassword from "@/app/pages/Authentication/ResetPassword/ResetPassWord";
 const MainRoutes = () => {
   return (
 
@@ -23,6 +25,8 @@ const MainRoutes = () => {
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<SignUp />} />
       <Route path="verify-register" element={<VerifyRegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       <Route path="" element={<AdminLayout />}>
         <Route path="" element={<Navigate to="/dashboard" />} />

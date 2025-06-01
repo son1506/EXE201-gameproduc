@@ -29,6 +29,8 @@
     "react-router": "^7.5.0",
     "react-router-dom": "^7.6.1",
     "react-toastify": "^11.0.5",
+    "React-Vite-Typescript": "file:",
+    "toast": "^0.5.4",
     "zod": "^3.24.2",
     "zustand": "^5.0.3"
   },
