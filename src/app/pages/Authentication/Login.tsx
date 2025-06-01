@@ -1,14 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import loginAccount from "../../modules/Authentication/loginAccount";
+import Cookies from "js-cookie";
+import { message } from "antd"; // Ant Design toast
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    // TODO: Bạn có thể thêm logic kiểm tra đăng nhập ở đây
-    // Sau đó chuyển về trang Home
-    navigate("/");
-  };
+const handleLogin = async () => {
+  try {
+    const result = await loginAccount(email, password);
+
+    if (result.token) {
+      Cookies.set("__atok", result.token);
+      message.success("Login successful!");
+      navigate("/");
+    } else {
+      message.error("Login failed: No token received.");
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      message.error(error.message);
+    } else {
+      message.error("An unexpected error occurred.");
+    }
+  }
+};
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-pink-200 via-pink-100 to-white">
@@ -24,17 +44,28 @@ const Login: React.FC = () => {
           >
             Sign up
           </Link>
+          <button
+            className="w-28 py-2 rounded-lg bg-pink-600 text-white font-semibold hover:bg-pink-700 transition"
+            aria-pressed="true"
+            onClick={handleLogin}
+          >
+            Log in
+          </button>
         </div>
 
         <div className="space-y-6">
           <input
             type="text"
             placeholder="Username or email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full p-3 rounded-md border border-pink-300 bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-400"
           />
           <input
             type="password"
             placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full p-3 rounded-md border border-pink-300 bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-400"
           />
           <button
