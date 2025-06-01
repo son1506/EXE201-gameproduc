@@ -1,36 +1,41 @@
-import { Button, Input } from "antd";
+import { Button, Input, message } from "antd";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // 👈 import navigate
+import { registerAccount } from "../../modules/Authentication/registerAccount"; // API gọi email
 
 export default function SignUp() {
+  const [email, setEmail] = useState("");
+  const navigate = useNavigate(); 
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    if (!email) {
+      message.warning("Vui lòng nhập email.");
+      return;
+    }
+
+    try {
+      await registerAccount(email); // Gửi email
+      message.success("Email xác thực đã được gửi. Vui lòng kiểm tra hộp thư.");
+      navigate("/verify-register"); // 👈 chuyển trang sau khi gửi email thành công
+    } catch (error) {
+      console.error("Đăng ký lỗi:", error);
+      message.error("Có lỗi xảy ra khi gửi email xác thực.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md p-6 bg-white shadow-lg rounded-lg">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-pink-500 mb-4">Create your account</h1>
-          <div className="flex justify-center space-x-4 mb-6">
-            <a href="/signup" className="text-teal-500 font-semibold border-b-2 border-teal-500 pb-1">
-              Sign up
-            </a>
-            <a href="/login" className="text-gray-400 font-semibold border-b-2 border-gray-200 pb-1">
-              Log in
-            </a>
-          </div>
-        </div>
-        <form className="space-y-4">
-          <Input
-            placeholder="Username"
-            className="w-full h-10 border border-pink-200 bg-pink-50 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-300"
-          />
-          <Input.Password
-            placeholder="Password"
-            className="w-full h-10 border border-pink-200 bg-pink-50 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-300"
-          />
-          <Input.Password
-            placeholder="Confirm password"
-            className="w-full h-10 border border-pink-200 bg-pink-50 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-300"
-          />
+        <h1 className="text-3xl font-bold text-pink-500 mb-6 text-center">Enter your email</h1>
+        <form onSubmit={handleRegister} className="space-y-4">
           <Input
             type="email"
+            name="email"
             placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full h-10 border border-pink-200 bg-pink-50 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-300"
           />
           <Button
@@ -38,12 +43,9 @@ export default function SignUp() {
             htmlType="submit"
             className="w-full h-10 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-lg flex items-center justify-center"
           >
-            Sign up
+            Send Verification Email
           </Button>
         </form>
-        <p className="mt-4 text-center text-sm text-pink-500">
-          Already have a account? <a href="/login" className="underline">Log in</a>
-        </p>
       </div>
     </div>
   );
