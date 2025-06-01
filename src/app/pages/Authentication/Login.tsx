@@ -48,7 +48,6 @@ const Login: React.FC = () => {
           >
             Log in
           </button>
-
         </div>
 
         <div className="space-y-6">
@@ -66,6 +65,17 @@ const Login: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full p-3 rounded-md border border-pink-300 bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-400"
           />
+          
+          {/* Forgot Password Link */}
+          <div className="text-right">
+            <Link 
+              to="/forgot-password" 
+              className="text-sm text-pink-600 hover:text-pink-800 hover:underline transition"
+            >
+              Forgot your password?
+            </Link>
+          </div>
+
           <button
             onClick={handleLogin}
             className="w-full py-3 bg-pink-600 text-white font-bold rounded-md hover:bg-pink-700 transition"
@@ -85,4 +95,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Login; 
