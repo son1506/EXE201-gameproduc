@@ -19,7 +19,7 @@ export default function SignUp() {
     try {
       await registerAccount(email); // Gửi email
       message.success("Email xác thực đã được gửi. Vui lòng kiểm tra hộp thư.");
-      navigate("/verify-register"); // 👈 chuyển trang sau khi gửi email thành công
+      // navigate("/verify-register"); // 👈 chuyển trang sau khi gửi email thành công
     } catch (error) {
       console.error("Đăng ký lỗi:", error);
       message.error("Có lỗi xảy ra khi gửi email xác thực.");
