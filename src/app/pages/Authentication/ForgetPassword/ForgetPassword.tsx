@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import forgotPassword from "../../../modules/Authentication/forgotPassWord";
 import { message } from "antd";
 
 const ForgotPassword: React.FC = () => {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
@@ -26,8 +25,10 @@ const ForgotPassword: React.FC = () => {
     try {
       await forgotPassword(email);
       setIsEmailSent(true);
+      message.success("Mã resetToken đã được gửi đến email của bạn!");
     } catch (error) {
       console.error("Forgot password error:", error);
+      message.error("Đã có lỗi xảy ra. Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
     }
@@ -54,8 +55,8 @@ const ForgotPassword: React.FC = () => {
                 Email đã được gửi!
               </h1>
               <p className="text-gray-600 mb-6">
-                Chúng tôi đã gửi mã token đặt lại mật khẩu đến địa chỉ email của bạn. 
-                Vui lòng kiểm tra hộp thư và sử dụng mã token để đặt lại mật khẩu.
+                Chúng tôi đã gửi mã resetToken đặt lại mật khẩu đến địa chỉ email của bạn. 
+                Vui lòng kiểm tra hộp thư và nhấn vào liên kết trong email để đặt lại mật khẩu.
               </p>
               <p className="text-sm text-gray-500 mb-8">
                 Không nhận được email? Hãy kiểm tra thư mục spam hoặc thử lại.
@@ -63,13 +64,6 @@ const ForgotPassword: React.FC = () => {
             </div>
             
             <div className="space-y-4">
-              <button
-                onClick={() => navigate("/reset-password")}
-                className="w-full py-3 bg-pink-600 text-white font-bold rounded-md hover:bg-pink-700 transition"
-              >
-                Đặt lại mật khẩu
-              </button>
-              
               <button
                 onClick={() => {
                   setIsEmailSent(false);
@@ -101,7 +95,7 @@ const ForgotPassword: React.FC = () => {
             Quên mật khẩu?
           </h1>
           <p className="text-gray-600">
-            Đừng lo lắng! Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn mã token để đặt lại mật khẩu.
+            Đừng lo lắng! Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn mã resetToken để đặt lại mật khẩu.
           </p>
         </div>
 
@@ -140,7 +134,7 @@ const ForgotPassword: React.FC = () => {
                 Đang gửi...
               </div>
             ) : (
-              "Gửi mã token"
+              "Gửi mã resetToken"
             )}
           </button>
         </div>
@@ -150,12 +144,6 @@ const ForgotPassword: React.FC = () => {
             Nhớ mật khẩu rồi?{" "}
             <Link to="/login" className="underline hover:text-pink-800 font-semibold">
               Quay lại đăng nhập
-            </Link>
-          </p>
-          <p className="text-pink-600 mt-2">
-            Có mã token rồi?{" "}
-            <Link to="/reset-password" className="underline hover:text-pink-800 font-semibold">
-              Đặt lại mật khẩu
             </Link>
           </p>
         </div>
