@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import loginAccount from "../../modules/Authentication/loginAccount"; // Ensure this path is correct
-import Cookies from "js-cookie";
+import loginAccount from "../../modules/Authentication/loginAccount";
 import { message } from "antd";
 
 const Login: React.FC = () => {
@@ -9,27 +8,39 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Move handleLogin inside the component
   const handleLogin = async () => {
     try {
       const result = await loginAccount(email, password);
 
-      // Assuming the response contains a token
-      if (result.token) {
-        Cookies.set("__atok", result.token);
+      if (result.success) {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("accountName", email); // Lưu để hiển thị ở header
+        message.success("Login successful");
+        navigate("/");
+      } else {
+        message.error("Login failed. Please try again.");
       }
-
-      navigate("/");
-      message.success("Login successful"); // Fix the message text
     } catch (error) {
-      // Since the error is handled in loginAccount, you might still want to show a failure message
       message.error("Login failed. Please try again.");
     }
   };
 
+  const handleGoBack = () => {
+    navigate(-1); // quay lại trang trước đó
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-pink-200 via-pink-100 to-white">
-      <div className="bg-white rounded-lg shadow-lg p-10 w-full max-w-md">
+      <div className="bg-white rounded-lg shadow-lg p-10 w-full max-w-md relative">
+
+        {/* Nút quay lại */}
+        <button
+          onClick={handleGoBack}
+          className="absolute left-4 top-4 text-pink-600 hover:text-pink-800 font-medium text-sm"
+        >
+          ← Go Back
+        </button>
+
         <h1 className="text-3xl font-extrabold text-pink-600 mb-8 text-center">
           Log in to your account
         </h1>
@@ -43,7 +54,6 @@ const Login: React.FC = () => {
           </Link>
           <button
             className="w-28 py-2 rounded-lg bg-pink-600 text-white font-semibold hover:bg-pink-700 transition"
-            aria-pressed="true"
             onClick={handleLogin}
           >
             Log in
@@ -65,11 +75,9 @@ const Login: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full p-3 rounded-md border border-pink-300 bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-400"
           />
-          
-          {/* Forgot Password Link */}
           <div className="text-right">
-            <Link 
-              to="/forgot-password" 
+            <Link
+              to="/forgot-password"
               className="text-sm text-pink-600 hover:text-pink-800 hover:underline transition"
             >
               Forgot your password?
@@ -95,4 +103,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login; 
+export default Login;

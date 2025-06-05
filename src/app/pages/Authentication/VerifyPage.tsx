@@ -1,17 +1,18 @@
+// src/pages/VerifyRegisterPage.jsx
 import { Button, Input, message } from "antd";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import verifyRegisterAccount from "../../modules/Authentication/verifyRegister"; // API xác thực
+import verifyRegisterAccount from "../../modules/Authentication/verifyRegister";
 
 export default function VerifyRegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const verificationToken = searchParams.get("verificationToken") || ""; // Extract token from URL
+  const verificationToken = searchParams.get("verificationToken") || "";
 
   const [formData, setFormData] = useState({
     accountName: "",
     accountPassword: "",
-    verificationToken: verificationToken, // Initialize with URL token
+    verificationToken,
   });
 
   const handleChange = (e) => {
@@ -21,7 +22,6 @@ export default function VerifyRegisterPage() {
 
   const handleVerify = async (e) => {
     e.preventDefault();
-
     const { accountName, accountPassword, verificationToken } = formData;
 
     if (!accountName || !accountPassword) {
@@ -36,8 +36,13 @@ export default function VerifyRegisterPage() {
 
     try {
       await verifyRegisterAccount(accountName, accountPassword, verificationToken);
-      message.success("Xác minh thành công. Bạn có thể đăng nhập.");
-      navigate("/login");
+
+      // ✅ Lưu thông tin đăng nhập
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("accountName", accountName);
+
+      message.success("Xác minh thành công. Bạn đã được đăng nhập.");
+      navigate("/"); // hoặc navigate("/dashboard") nếu có
     } catch (error) {
       console.error("Xác minh lỗi:", error);
       message.error(error.message || "Có lỗi xảy ra khi xác minh đăng ký.");

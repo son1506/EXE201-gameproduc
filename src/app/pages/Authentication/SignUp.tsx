@@ -1,12 +1,11 @@
-
 import { Button, Input, message } from "antd";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // 👈 import navigate
+import { useNavigate } from "react-router-dom"; // 👈 importation de navigate
 import { registerAccount } from "../../modules/Authentication/registerAccount"; // API gọi email
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -26,8 +25,19 @@ export default function SignUp() {
     }
   };
 
+  const handleGoBack = () => {
+    navigate(-1); // quay lại trang trước đó
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      {/* Nút quay lại */}
+      <Button
+        onClick={handleGoBack}
+        className="absolute left-4 top-4 bg-pink-50 text-pink-600 hover:bg-pink-100 border border-pink-200 rounded-lg h-8 flex items-center justify-center text-sm font-medium transition-colors"
+      >
+        ← Go Back
+      </Button>
       <div className="w-full max-w-md p-6 bg-white shadow-lg rounded-lg">
         <h1 className="text-3xl font-bold text-pink-500 mb-6 text-center">Enter your email</h1>
         <form onSubmit={handleRegister} className="space-y-4">
