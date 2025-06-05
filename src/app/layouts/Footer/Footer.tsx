@@ -1,4 +1,5 @@
-import { MailOutlined, ClockCircleOutlined } from "@ant-design/icons"
+import { MailOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import logopage from "../../assets/Logo_page.png";
 
 export default function Footer() {
   return (
@@ -80,15 +81,17 @@ export default function Footer() {
 
         {/* Logo Section */}
         <div className="mt-12 flex flex-col items-center">
-          <div className="text-4xl font-bold text-pink-500 mb-4">
-            SWEETIES
-            <div className="text-xl font-medium text-center">DOGMA</div>
-          </div>
+          <img
+            src={logopage}
+            alt="Sweeties Dogma Logo"
+            className="h-[200px] w-auto object-contain mb-4"
+          />
 
-          {/* Copyright */}
-          <div className="mt-4 text-sm text-gray-400">© 2025 Sweeties Dogma. All rights reserved.</div>
+          <div className="mt-4 text-sm text-gray-400">
+            © 2025 Sweeties Dogma. All rights reserved.
+          </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }
