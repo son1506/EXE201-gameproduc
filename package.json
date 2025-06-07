@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
+    "@payos/node": "^1.0.10",
     "@tanstack/react-query": "^5.71.10",
     "@types/react-google-recaptcha": "^2.1.9",
     "antd": "^5.24.6",
     "axios": "^1.8.4",
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.2.0",
     "dayjs": "^1.11.13",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
