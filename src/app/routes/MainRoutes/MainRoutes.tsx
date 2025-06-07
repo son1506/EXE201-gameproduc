@@ -23,9 +23,7 @@ const MainRoutes = () => {
         {/* <Route path="/about" element={<AboutUs />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} /> */}
-      </Route>
-
-      <Route path="login" element={<Login />} />
+                <Route path="login" element={<Login />} />
       <Route path="signup" element={<SignUp />} />
       <Route path="verify-register" element={<VerifyRegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -33,6 +31,9 @@ const MainRoutes = () => {
       <Route path="/payos-redirect" element={<PayOSRedirectPage />} />
       <Route path="/return-url" element={<ReturnPage />} />
       <Route path="/cancel-url" element={<CancelPage />} />
+      </Route>
+
+
 
 
       <Route path="" element={<AdminLayout />}>

@@ -5,7 +5,6 @@ import { message, Button, Card, Descriptions } from "antd";
 export default function ReturnPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [balance, setBalance] = useState<number>(0);
   const [transactionStatus, setTransactionStatus] = useState<string>("");
   const [transactionDetails, setTransactionDetails] = useState({
     code: "",
@@ -24,7 +23,13 @@ export default function ReturnPage() {
     const status = searchParams.get("status") || "";
     const orderCode = searchParams.get("orderCode") || "";
     const pendingAmount = Number(localStorage.getItem("pendingAmount")) || 0;
-    const pendingOrderCode = localStorage.getItem("pendingOrderCode") || "";
+
+    // Ghi log để debug nếu cần
+    console.log("code:", code);
+    console.log("status:", status);
+    console.log("cancel:", cancel);
+    console.log("orderCode:", orderCode);
+    console.log("pendingAmount:", pendingAmount);
 
     // Cập nhật transaction details
     setTransactionDetails({
@@ -37,17 +42,13 @@ export default function ReturnPage() {
     });
 
     // Kiểm tra trạng thái giao dịch
-    if (code === "00" && status === "PAID" && !cancel && orderCode === pendingOrderCode) {
-      // Giao dịch thành công
+    if (code === "00" && status === "PAID" && !cancel) {
       setTransactionStatus("Thanh toán thành công!");
 
-      // Lấy số dư hiện tại từ localStorage
+      // Cập nhật số dư vào localStorage (nếu cần dùng sau này)
       const currentBalance = Number(localStorage.getItem("userBalance")) || 0;
-
-      // Cập nhật số dư mới
       const newBalance = currentBalance + pendingAmount;
       localStorage.setItem("userBalance", newBalance.toString());
-      setBalance(newBalance);
 
       // Xóa dữ liệu tạm sau khi xử lý
       localStorage.removeItem("pendingAmount");
@@ -55,29 +56,16 @@ export default function ReturnPage() {
 
       message.success("Thanh toán thành công!");
     } else if (code === "00" && (status === "CANCELLED" || cancel)) {
-      // Giao dịch bị hủy
       setTransactionStatus("Giao dịch đã bị hủy.");
-      setBalance(Number(localStorage.getItem("userBalance")) || 0);
       message.warning("Giao dịch đã bị hủy.");
     } else if (code === "01") {
-      // Invalid Params
       setTransactionStatus("Giao dịch không hợp lệ do tham số không đúng.");
-      setBalance(Number(localStorage.getItem("userBalance")) || 0);
       message.error("Giao dịch không hợp lệ.");
     } else {
-      // Trạng thái khác
       setTransactionStatus("Giao dịch đang xử lý hoặc không xác định.");
-      setBalance(Number(localStorage.getItem("userBalance")) || 0);
       message.info("Giao dịch đang xử lý.");
     }
   }, [searchParams]);
-
-  // Hàm reset số dư (dùng cho testing)
-  const handleResetBalance = () => {
-    localStorage.setItem("userBalance", "0");
-    setBalance(0);
-    message.info("Đã reset số dư về 0.");
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -98,27 +86,14 @@ export default function ReturnPage() {
           </Descriptions>
         </Card>
 
-        {/* Hiển thị số dư */}
-        <p className="text-lg text-gray-700 mb-4">
-          Số dư hiện tại: <span className="font-bold">{balance.toLocaleString()} VND</span>
-        </p>
-
-        {/* Nút Reset và Quay Lại */}
-        <div className="space-y-4">
-          <Button
-            type="primary"
-            onClick={() => navigate("/payos-redirect")}
-            className="w-full h-10 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-lg flex items-center justify-center"
-          >
-            Quay Lại
-          </Button>
-          <Button
-            onClick={handleResetBalance}
-            className="w-full h-10 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg flex items-center justify-center"
-          >
-            Reset Số Dư
-          </Button>
-        </div>
+        {/* Nút Quay Lại */}
+        <Button
+          type="primary"
+          onClick={() => navigate("/payos-redirect")}
+          className="w-full h-10 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-lg flex items-center justify-center"
+        >
+          Quay Lại
+        </Button>
       </div>
     </div>
   );

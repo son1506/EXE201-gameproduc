@@ -32,7 +32,7 @@ app.post('/api/create-payment-link', async (req, res) => {
       orderCode,
       amount,
       description,
-      returnUrl: `${FRONTEND_DOMAIN}/?success=true`,
+      returnUrl: `${FRONTEND_DOMAIN}/return-url`,
       cancelUrl: `${FRONTEND_DOMAIN}/?canceled=true`,
     });
 

@@ -33,13 +33,13 @@ const Login: React.FC = () => {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-pink-200 via-pink-100 to-white">
       <div className="bg-white rounded-lg shadow-lg p-10 w-full max-w-md relative">
 
-        {/* Nút quay lại */}
+        {/* Nút quay lại
         <button
           onClick={handleGoBack}
           className="absolute left-4 top-4 text-pink-600 hover:text-pink-800 font-medium text-sm"
         >
           ← Go Back
-        </button>
+        </button> */}
 
         <h1 className="text-3xl font-extrabold text-pink-600 mb-8 text-center">
           Log in to your account

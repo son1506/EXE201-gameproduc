@@ -32,12 +32,12 @@ export default function SignUp() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       {/* Nút quay lại */}
-      <Button
+      {/* <Button
         onClick={handleGoBack}
         className="absolute left-4 top-4 bg-pink-50 text-pink-600 hover:bg-pink-100 border border-pink-200 rounded-lg h-8 flex items-center justify-center text-sm font-medium transition-colors"
       >
         ← Go Back
-      </Button>
+      </Button> */}
       <div className="w-full max-w-md p-6 bg-white shadow-lg rounded-lg">
         <h1 className="text-3xl font-bold text-pink-500 mb-6 text-center">Enter your email</h1>
         <form onSubmit={handleRegister} className="space-y-4">
