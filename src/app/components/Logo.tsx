@@ -1,12 +1,19 @@
-const Logo = ({ collapsed, className }) => {
+import logoImage from '../../app/assets/Logo_page.png';
+
+interface LogoProps {
+    collapsed: boolean;
+    className?: string;
+}
+
+const Logo: React.FC<LogoProps> = ({ collapsed, className }) => {
     return (
         <div className={`flex items-center gap-2 transition-all duration-300 ${className}`}>
             <img
-                src="https://vawr.vn/images/logo-google.png"
+                src={logoImage}
                 alt="Logo"
-                className="h-8 w-8 object-contain"
+                className="h-15 w-15 object-contain"
             />
-            {!collapsed && <span className="text-lg font-semibold">Logo web</span>}
+            {/* {!collapsed && <span className="text-lg font-semibold">Logo web</span>} */}
         </div>
     );
 };

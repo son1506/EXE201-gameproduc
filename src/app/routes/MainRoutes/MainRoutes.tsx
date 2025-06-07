@@ -13,6 +13,7 @@ import ResetPassword from "@/app/pages/Authentication/ResetPassword/ResetPassWor
 import ReturnPage from "@/app/pages/services/Payment/ReturnPage";
 import PayOSRedirectPage from "@/app/pages/services/Payment/PayOSRedirectPage";
 import CancelPage from "@/app/pages/services/Payment/CancelPage";
+import RevenuePage from "@/app/pages/Admin/Dashboard/RevenuePage";
 const MainRoutes = () => {
   return (
 
@@ -37,6 +38,7 @@ const MainRoutes = () => {
       <Route path="" element={<AdminLayout />}>
         <Route path="" element={<Navigate to="/dashboard" />} />
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="/revenue" element={<RevenuePage />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
