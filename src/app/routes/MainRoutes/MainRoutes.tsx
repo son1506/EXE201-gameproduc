@@ -14,27 +14,24 @@ import ReturnPage from "@/app/pages/services/Payment/ReturnPage";
 import PayOSRedirectPage from "@/app/pages/services/Payment/PayOSRedirectPage";
 import CancelPage from "@/app/pages/services/Payment/CancelPage";
 import RevenuePage from "@/app/pages/Admin/Dashboard/RevenuePage";
+import Merchandise from "@/app/pages/services/Merchandise/Merchandise";
 const MainRoutes = () => {
   return (
 
     <Routes>
       <Route element={<UserLayout />}>
         <Route path="/" element={<Home />} />
-        {/* <Route path="/about" element={<AboutUs />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} /> */}
-                <Route path="login" element={<Login />} />
+
+      <Route path="login" element={<Login />} />
       <Route path="signup" element={<SignUp />} />
       <Route path="verify-register" element={<VerifyRegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/merchandise" element={<Merchandise />} />
       <Route path="/payos-redirect" element={<PayOSRedirectPage />} />
       <Route path="/return-url" element={<ReturnPage />} />
       <Route path="/cancel-url" element={<CancelPage />} />
       </Route>
-
-
-
 
       <Route path="" element={<AdminLayout />}>
         <Route path="" element={<Navigate to="/dashboard" />} />
