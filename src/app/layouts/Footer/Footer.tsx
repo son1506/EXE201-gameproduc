@@ -20,7 +20,7 @@ export default function Footer() {
   ]
 
   return (
-    <footer className="bg-gradient-to-br from-pink-300 via-pink-200 to-rose-200 relative overflow-hidden">
+    <footer className="bg-gradient-to-br from-pink-300 via-pink-400 to-rose-400/75 relative overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-4 left-4 w-8 h-8 bg-white rounded-full"></div>
