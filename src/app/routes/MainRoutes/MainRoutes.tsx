@@ -33,7 +33,8 @@ const MainRoutes = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/merchandise" element={<Merchandise />} />
-        <Route path="/merchandise/detail/:id" element={<Merchandisedetail />} />
+        <Route path="/merchandise/detail/:productId" element={<Merchandisedetail />} />
+
         <Route path="/payos-redirect" element={<PayOSRedirectPage />} />
         <Route path="/return-url" element={<ReturnPage />} />
         <Route path="/cancel-url" element={<CancelPage />} />
