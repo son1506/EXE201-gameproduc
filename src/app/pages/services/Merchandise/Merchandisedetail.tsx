@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button, Badge, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Heart, Star, Share2, Minus, Plus } from "lucide-react";
-import merchandise from "../../../../assets/Merchandise.jpg";
+import merchandise from "../../../assets/Merchandise.jpg";
 import { createPaymentLink } from "../../../modules/Payments/createPaymentLink";
 
 export default function Merchandisedetail() {
