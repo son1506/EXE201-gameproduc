@@ -5,7 +5,7 @@ import { ArrowLeft, ShoppingCart, Heart, Star, Share2, Minus, Plus } from "lucid
 import merchandise from "../../../../assets/Merchandise.jpg";
 import { createPaymentLink } from "../../../../modules/Payments/createPaymentLink";
 
-export default function MerchandiseDetail() {
+export default function Merchandisedetail() {
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
