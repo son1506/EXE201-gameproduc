@@ -15,6 +15,8 @@ import PayOSRedirectPage from "@/app/pages/services/Payment/PayOSRedirectPage";
 import CancelPage from "@/app/pages/services/Payment/CancelPage";
 import RevenuePage from "@/app/pages/Admin/Dashboard/RevenuePage";
 import Merchandise from "@/app/pages/services/Merchandise/Merchandise";
+import MerchandiseDetail from "@/app/pages/services/Merchandise/partials/Merchandisedetail";
+
 const MainRoutes = () => {
   return (
 
@@ -28,6 +30,7 @@ const MainRoutes = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/merchandise" element={<Merchandise />} />
+      <Route path="/merchandise/detail/:id" element={<MerchandiseDetail />} />
       <Route path="/payos-redirect" element={<PayOSRedirectPage />} />
       <Route path="/return-url" element={<ReturnPage />} />
       <Route path="/cancel-url" element={<CancelPage />} />

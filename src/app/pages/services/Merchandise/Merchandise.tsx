@@ -1,13 +1,14 @@
-
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Button, Badge } from "antd"
 import { ShoppingCart, Heart, Star } from "lucide-react"
-import logopage from "../../../assets/Logo_page.png";
+import logopage from "../../../assets/Logo_page.png"
 
 export default function Merchandise() {
     const [activeTab, setActiveTab] = useState("New")
     const [favorites, setFavorites] = useState<number[]>([])
     const [cart, setCart] = useState<number[]>([])
+    const navigate = useNavigate()
 
     const tabs = ["New", "Keyring", "Pin", "Collection"]
 
@@ -128,7 +129,6 @@ export default function Merchandise() {
         <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 font-pixel">
             {/* Header Section */}
             <section className="relative bg-gradient-to-r from-pink-200 via-rose-200 to-pink-300 py-16 px-4 overflow-hidden">
-                {/* Decorative elements */}
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-10 left-10 w-20 h-20 bg-white rounded-full animate-pulse"></div>
                     <div
@@ -171,8 +171,8 @@ export default function Merchandise() {
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={`px-6 py-3 rounded-full font-pixel text-sm font-bold transition-all duration-200 transform hover:scale-105 ${activeTab === tab
-                                        ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg"
-                                        : "bg-white text-pink-600 border-2 border-pink-300 hover:border-pink-400 shadow-md"
+                                    ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg"
+                                    : "bg-white text-pink-600 border-2 border-pink-300 hover:border-pink-400 shadow-md"
                                     }`}
                             >
                                 {tab === "New" && "🆕 "}
@@ -195,7 +195,6 @@ export default function Merchandise() {
                                 key={product.id}
                                 className="bg-white rounded-3xl shadow-xl border border-pink-100 overflow-hidden transform hover:scale-105 transition-all duration-300 hover:shadow-2xl group"
                             >
-                                {/* Product Image */}
                                 <div className="relative aspect-square bg-gradient-to-br from-pink-50 to-rose-50 p-6">
                                     {product.isNew && (
                                         <div className="absolute top-4 left-4 z-10">
@@ -210,19 +209,17 @@ export default function Merchandise() {
                                             />
                                         </div>
                                     )}
-
                                     <button
                                         onClick={() => toggleFavorite(product.id)}
                                         className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
                                     >
                                         <Heart
                                             className={`w-5 h-5 ${favorites.includes(product.id)
-                                                    ? "text-red-500 fill-red-500"
-                                                    : "text-gray-400 hover:text-red-400"
+                                                ? "text-red-500 fill-red-500"
+                                                : "text-gray-400 hover:text-red-400"
                                                 }`}
                                         />
                                     </button>
-
                                     <img
                                         src={product.image || "/placeholder.svg"}
                                         alt={product.name}
@@ -230,7 +227,6 @@ export default function Merchandise() {
                                     />
                                 </div>
 
-                                {/* Product Info */}
                                 <div className="p-6">
                                     <div className="flex items-center gap-2 mb-2">
                                         <div className="flex items-center gap-1">
@@ -252,11 +248,11 @@ export default function Merchandise() {
                                     </div>
 
                                     <Button
-                                        onClick={() => addToCart(product.id)}
+                                        onClick={() => navigate(`/merchandise/detail/${product.id}`)}
                                         className="w-full bg-gradient-to-r from-teal-400 to-cyan-400 hover:from-teal-500 hover:to-cyan-500 text-white border-none rounded-full py-3 font-pixel text-lg font-bold shadow-lg transform hover:scale-105 transition-all duration-200"
                                         icon={<ShoppingCart className="w-5 h-5" />}
                                     >
-                                        Add to Cart
+                                        Buy
                                     </Button>
                                 </div>
                             </div>
