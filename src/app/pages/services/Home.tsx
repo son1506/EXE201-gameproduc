@@ -7,6 +7,7 @@ import character from "../../assets/Character.gif";
 import customize from "../../assets/customize.png";
 import merchandise from "../../assets/Merchandise.jpg";
 import character2 from "../../assets/Character2.png";
+import logopage2 from "../../assets/logo_2.png";
 export default function Home() {
     const [currentSlide, setCurrentSlide] = useState(0)
     const [email, setEmail] = useState("")
@@ -58,7 +59,7 @@ export default function Home() {
                     <div className="relative z-10 max-w-4xl mx-auto">
                         <div className="mb-8 transform hover:scale-105 transition-transform duration-300">
                             <img
-                                src={logopage}
+                                src={logopage2}
                                 alt="Sweeties Logo"
                                 className="mx-auto w-[320px] h-auto drop-shadow-2xl"
                             />
