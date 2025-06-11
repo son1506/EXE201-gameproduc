@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { Button, Badge } from "antd"
 import { ShoppingCart, Heart, Star } from "lucide-react"
 import logopage from "../../../assets/Logo_page.png"
-
+import logopage2 from "../../../assets/logo_2.png"
 export default function Merchandise() {
     const [activeTab, setActiveTab] = useState("New")
     const [favorites, setFavorites] = useState<number[]>([])
@@ -144,7 +144,7 @@ export default function Merchandise() {
                 <div className="relative z-10 max-w-4xl mx-auto text-center">
                     <div className="mb-8">
                         <img
-                            src={logopage}
+                            src={logopage2}
                             alt="Sweeties Dodging Logo"
                             className="mx-auto w-[300px] h-auto drop-shadow-2xl transform hover:scale-105 transition-transform duration-300"
                         />
@@ -163,7 +163,7 @@ export default function Merchandise() {
             </section>
 
             {/* Navigation Tabs */}
-            <section className="bg-white/80 backdrop-blur-sm border-b border-pink-200 sticky top-0 z-40">
+            <section className="bg-white/80 backdrop-blur-sm border-b border-pink-200  top-0 z-40">
                 <div className="max-w-6xl mx-auto px-4 py-6">
                     <div className="flex flex-wrap justify-center gap-2">
                         {tabs.map((tab) => (
