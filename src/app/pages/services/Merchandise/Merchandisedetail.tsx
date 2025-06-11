@@ -3,7 +3,7 @@ import { Button, Badge, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Heart, Star, Share2, Minus, Plus } from "lucide-react";
 import merchandise from "../../../../assets/Merchandise.jpg";
-import { createPaymentLink } from "../../../../modules/Payments/createPaymentLink";
+import { createPaymentLink } from "../../../modules/Payments/createPaymentLink";
 
 export default function Merchandisedetail() {
   const navigate = useNavigate();
@@ -143,11 +143,10 @@ export default function Merchandisedetail() {
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`aspect-square rounded-2xl border-4 overflow-hidden transition-all duration-200 ${
-                    selectedImage === index
+                  className={`aspect-square rounded-2xl border-4 overflow-hidden transition-all duration-200 ${selectedImage === index
                       ? "border-pink-400 shadow-lg scale-105"
                       : "border-gray-200 hover:border-pink-300 hover:scale-102"
-                  }`}
+                    }`}
                 >
                   <img
                     src={image || "/placeholder.svg"}
