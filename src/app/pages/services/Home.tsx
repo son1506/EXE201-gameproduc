@@ -7,7 +7,7 @@ import customize from "../../assets/customize.png";
 import merchandise from "../../assets/Merchandise.jpg";
 import character2 from "../../assets/Character2.png";
 import logopage2 from "../../assets/logo_2.png";
-import Chatbot from "../../components/Chatbot/Chatbot";
+import Chatbot from "../../components/Chatbot";
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
