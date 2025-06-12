@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, FormEvent } from 'react';
 import { Input, Button } from 'antd';
 import { SendOutlined, CloseOutlined } from '@ant-design/icons';
+import  {callchat}  from '../modules/Chatbot/callchat'; 
 import './Chatbot.css';
 
 interface Message {
@@ -31,24 +32,7 @@ const Chatbot: React.FC = () => {
     setInput('');
 
     try {
-      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: 'openai/gpt-3.5-turbo',
-          messages: [
-            { role: 'system', content: 'Bạn là Sweeties AI - trợ lý vui vẻ sẵn sàng giúp!' },
-            ...messages,
-            userMessage,
-          ],
-        }),
-      });
-
-      const data = await res.json();
-      const reply = data?.choices?.[0]?.message?.content || 'Xin lỗi, tôi không hiểu 😢';
+      const reply = await callchat([...messages, userMessage]); // ✅ gọi từ utils/chatAPI
       setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
     } catch (err) {
       setMessages((prev) => [
