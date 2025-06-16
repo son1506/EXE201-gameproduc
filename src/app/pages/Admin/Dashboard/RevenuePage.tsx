@@ -1,212 +1,248 @@
-import React, { useState, useMemo } from "react";
-import { Card, Table, DatePicker, Select, Row, Col, Statistic, Tag } from "antd";
-import { BarChartOutlined, CalendarOutlined, RiseOutlined } from "@ant-design/icons";
-import { ColumnsType } from "antd/es/table";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Card,
+  Row,
+  Col,
+  Statistic,
+  Button,
+  Space,
+  DatePicker,
+  Table,
+  Spin,
+  message,
+} from "antd";
+import {
+  RiseOutlined,
+  ShoppingOutlined,
+  BankOutlined,
+  LinkOutlined,
+} from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 
+dayjs.extend(isBetween);
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL as string;
 const { RangePicker } = DatePicker;
-const { Option } = Select;
 
-// Interfaces
-interface SaleData {
-  date: string;
-  product: string;
-  quantity: number;
-  revenue: number;
+/* ----------------------- types ----------------------- */
+interface Transaction {
+  orderCode: string | number;
+  amount: number;
+  status: string;           // backend đã map SUCCEEDED → "PAID"
+  bankName?: string;
+  channelName?: string;
+  createdAt: string;
 }
-
-interface GroupedData {
-  period: string;
+interface TodayStats {
   totalRevenue: number;
-  totalQuantity: number;
+  totalOrders: number;
 }
 
-type ViewType = "day" | "month" | "year";
+/* ------------------ date presets --------------------- */
+type Preset =
+  | "yesterday"
+  | "today"
+  | "thisWeek"
+  | "thisMonth"
+  | "lastMonth"
+  | "thisYear"
+  | "lastYear"
+  | "custom";
 
-// Dữ liệu mock doanh thu
-const salesData: SaleData[] = [
-  { date: "2024-06-01", product: "Sweeties Plushie", quantity: 5, revenue: 1495000 },
-  { date: "2024-06-01", product: "Game Soundtrack CD", quantity: 10, revenue: 1500000 },
-  { date: "2024-06-02", product: "Sweeties Plushie", quantity: 3, revenue: 897000 },
-  { date: "2024-06-02", product: "Game Soundtrack CD", quantity: 8, revenue: 1200000 },
-  { date: "2024-06-03", product: "Sweeties Plushie", quantity: 7, revenue: 2093000 },
-  { date: "2024-06-03", product: "Game Soundtrack CD", quantity: 12, revenue: 1800000 },
-  { date: "2024-06-04", product: "Sweeties Plushie", quantity: 2, revenue: 598000 },
-  { date: "2024-06-04", product: "Game Soundtrack CD", quantity: 6, revenue: 900000 },
-  { date: "2024-06-05", product: "Sweeties Plushie", quantity: 4, revenue: 1196000 },
-  { date: "2024-06-05", product: "Game Soundtrack CD", quantity: 9, revenue: 1350000 },
-  { date: "2024-06-06", product: "Sweeties Plushie", quantity: 6, revenue: 1794000 },
-  { date: "2024-06-06", product: "Game Soundtrack CD", quantity: 11, revenue: 1650000 },
-  { date: "2024-06-07", product: "Sweeties Plushie", quantity: 1, revenue: 299000 },
-  { date: "2024-06-07", product: "Game Soundtrack CD", quantity: 4, revenue: 600000 },
-];
-
-// Component chính
-const RevenuePage: React.FC = () => {
-  const [viewType, setViewType] = useState<ViewType>("day");
-  const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null] | []>([]);
-
-  // Lọc dữ liệu theo khoảng thời gian và nhóm theo ngày/tháng/năm
-  const filteredData = useMemo((): GroupedData[] => {
-    let filtered: SaleData[] = salesData;
-
-    // Lọc theo khoảng thời gian
-    if (dateRange.length === 2 && dateRange[0] && dateRange[1]) {
-      const [startDate, endDate] = dateRange;
-      filtered = salesData.filter((sale: SaleData) =>
-        dayjs(sale.date).isBetween(startDate, endDate, "day", "[]")
-      );
+function presetRange(p: Preset): [Dayjs, Dayjs] {
+  const d = dayjs();
+  switch (p) {
+    case "yesterday":
+      return [d.subtract(1, "day").startOf("day"), d.subtract(1, "day").endOf("day")];
+    case "today":
+      return [d.startOf("day"), d.endOf("day")];
+    case "thisWeek":
+      return [d.startOf("week"), d.endOf("week")];
+    case "thisMonth":
+      return [d.startOf("month"), d.endOf("month")];
+    case "lastMonth": {
+      const m = d.subtract(1, "month");
+      return [m.startOf("month"), m.endOf("month")];
     }
+    case "thisYear":
+      return [d.startOf("year"), d.endOf("year")];
+    case "lastYear": {
+      const y = d.subtract(1, "year");
+      return [y.startOf("year"), y.endOf("year")];
+    }
+    default:
+      return [d.startOf("day"), d.endOf("day")];
+  }
+}
 
-    // Nhóm dữ liệu theo viewType
-    const grouped: Record<string, GroupedData> = {};
-    filtered.forEach((sale: SaleData) => {
-      let key: string;
-      if (viewType === "month") {
-        key = dayjs(sale.date).format("YYYY-MM");
-      } else if (viewType === "year") {
-        key = dayjs(sale.date).format("YYYY");
-      } else {
-        key = sale.date;
-      }
+/* =================== component ======================= */
+const RevenuePage: React.FC = () => {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [todayStats, setTodayStats] = useState<TodayStats>({ totalRevenue: 0, totalOrders: 0 });
+  const [loading, setLoading] = useState(false);
 
-      if (!grouped[key]) {
-        grouped[key] = { period: key, totalRevenue: 0, totalQuantity: 0 };
-      }
-      grouped[key].totalRevenue += sale.revenue;
-      grouped[key].totalQuantity += sale.quantity;
-    });
+  const [preset, setPreset] = useState<Preset>("today");
+  const [range, setRange] = useState<[Dayjs, Dayjs]>(presetRange("today"));
 
-    return Object.values(grouped).sort((a, b) => b.period.localeCompare(a.period));
-  }, [dateRange, viewType]);
+  /* -------- fetch transactions once -------- */
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${BACKEND_URL}/api/transactions`)
+      .then(r => r.json())
+      .then(setTransactions)
+      .catch(() => message.error("Không thể tải danh sách giao dịch"))
+      .finally(() => setLoading(false));
+  }, []);
 
-  // Tổng doanh thu và số lượng bán
-  const totalRevenue: number = filteredData.reduce((sum, item) => sum + item.totalRevenue, 0);
-  const totalQuantity: number = filteredData.reduce((sum, item) => sum + item.totalQuantity, 0);
+  /* -------- fetch stats today -------- */
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/api/stats/today`)
+      .then(r => r.json())
+      .then(setTodayStats)
+      .catch(() => message.error("Không thể tải thống kê hôm nay"));
+  }, []);
 
-  // Cột của bảng
-  const columns: ColumnsType<GroupedData> = [
-    {
-      title: "Thời gian",
-      dataIndex: "period",
-      key: "period",
-      render: (period: string) => (
-        <Tag color="blue">
-          <CalendarOutlined /> {viewType === "month" ? dayjs(period).format("MM/YYYY") : period}
-        </Tag>
+  /* -------- filter & aggregate -------- */
+  const paidInRange = useMemo(
+    () =>
+      transactions.filter(
+        (t) =>
+          t.status === "PAID" &&
+          dayjs(t.createdAt).isBetween(range[0], range[1], "day", "[]")
       ),
-    },
-    {
-      title: "Tổng doanh thu",
-      dataIndex: "totalRevenue",
-      key: "totalRevenue",
-      render: (revenue: number) => (
-        <span style={{ color: "green", fontWeight: "bold" }}>
-          {revenue.toLocaleString()} VND
-        </span>
-      ),
-    },
-    {
-      title: "Tổng số lượng bán",
-      dataIndex: "totalQuantity",
-      key: "totalQuantity",
-      render: (quantity: number) => (
-        <Tag color="purple" style={{ fontWeight: "bold" }}>
-          {quantity} sản phẩm
-        </Tag>
-      ),
-    },
-  ];
+    [transactions, range]
+  );
 
-  const handleViewTypeChange = (value: ViewType): void => {
-    setViewType(value);
-  };
+  const totalRevenue =
+    preset === "today" ? todayStats.totalRevenue : paidInRange.reduce((s, t) => s + t.amount, 0);
 
-  const handleDateRangeChange = (dates: [Dayjs | null, Dayjs | null] | null): void => {
-    setDateRange(dates || []);
-  };
+  const totalOrders =
+    preset === "today" ? todayStats.totalOrders : paidInRange.length;
 
+  const sumBy = (key: "bankName" | "channelName") =>
+    paidInRange.reduce<Record<string, number>>((acc, t) => {
+      const k = t[key] || "Khác";
+      acc[k] = (acc[k] || 0) + t.amount;
+      return acc;
+    }, {});
+
+  const revenueByBank = Object.entries(sumBy("bankName")).map(([bank, amount]) => ({ bank, amount }));
+  const revenueByChannel = Object.entries(sumBy("channelName")).map(([channel, amount]) => ({ channel, amount }));
+
+  const money = (v: number) => `${v.toLocaleString()}VND`;
+
+  /* -------------------- UI -------------------- */
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      {/* Tiêu đề trang */}
-      <Card className="mb-6">
-        <h1 className="text-2xl font-bold flex items-center">
-          <BarChartOutlined className="mr-3 text-green-500" />
-          Phân tích doanh thu
-        </h1>
-        <p className="text-gray-500">Theo dõi doanh thu theo ngày, tháng, năm</p>
-      </Card>
-
-      {/* Bộ lọc */}
-      <Card className="mb-6">
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={12} md={8}>
-            <label className="block font-semibold mb-2">Xem theo:</label>
-            <Select
-              value={viewType}
-              onChange={handleViewTypeChange}
-              className="w-full"
-              size="large"
+      {/* filter bar */}
+      <Card className="mb-5">
+        <Space wrap>
+          {(
+            [
+              ["Hôm qua", "yesterday"],
+              ["Hôm nay", "today"],
+              ["Tuần này", "thisWeek"],
+              ["Tháng này", "thisMonth"],
+              ["Tháng trước", "lastMonth"],
+              ["Năm nay", "thisYear"],
+              ["Năm trước", "lastYear"],
+            ] as [string, Preset][]
+          ).map(([label, key]) => (
+            <Button
+              key={key}
+              type={preset === key ? "primary" : "default"}
+              onClick={() => {
+                setPreset(key);
+                setRange(presetRange(key));
+              }}
             >
-              <Option value="day">📅 Theo ngày</Option>
-              <Option value="month">📆 Theo tháng</Option>
-              <Option value="year">🗓️ Theo năm</Option>
-            </Select>
-          </Col>
-          <Col xs={24} sm={12} md={16}>
-            <label className="block font-semibold mb-2">Khoảng thời gian:</label>
-            <RangePicker
-              value={dateRange.length === 2 ? [dateRange[0], dateRange[1]] : undefined}
-              onChange={handleDateRangeChange}
-              className="w-full"
-              size="large"
-              format="DD/MM/YYYY"
-            />
-          </Col>
-        </Row>
+              {label}
+            </Button>
+          ))}
+
+          <RangePicker
+            value={preset === "custom" ? range : undefined}
+            onChange={(v) => {
+              if (!v) return;
+              setPreset("custom");
+              setRange([v[0] as Dayjs, v[1] as Dayjs]);
+            }}
+            format="DD/MM/YYYY"
+          />
+        </Space>
       </Card>
 
-      {/* Thống kê tổng quan */}
+      {/* kpi tiles */}
       <Row gutter={[16, 16]} className="mb-6">
-        <Col xs={24} sm={12} md={8}>
-          <Card>
+        <Col xs={24} md={12}>
+          <Card
+            style={{ background: "linear-gradient(135deg,#7c4dff 0%,#6a1b9a 100%)", color: "#fff" }}
+            bodyStyle={{ padding: 24 }}
+          >
             <Statistic
               title="Tổng doanh thu"
               value={totalRevenue}
               prefix={<RiseOutlined />}
               suffix="VND"
-              valueStyle={{ color: "#3f8600" }}
-              formatter={(value: number) => value.toLocaleString()}
+              valueStyle={{ color: "#fff" }}
+              formatter={(v) => Number(v).toLocaleString()}
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} md={8}>
-          <Card>
+
+        <Col xs={24} md={12}>
+          <Card style={{ background: "#f3f1ff" }} bodyStyle={{ padding: 24 }}>
             <Statistic
-              title="Tổng số lượng bán"
-              value={totalQuantity}
-              prefix={<BarChartOutlined />}
-              suffix="sản phẩm"
-              valueStyle={{ color: "#1890ff" }}
+              title="Tổng đơn hàng"
+              value={totalOrders}
+              prefix={<ShoppingOutlined />}
+              valueStyle={{ color: "#4b39ef" }}
             />
           </Card>
         </Col>
       </Row>
 
-      {/* Bảng chi tiết doanh thu */}
-      <Card>
-        <Table
-          columns={columns}
-          dataSource={filteredData}
-          rowKey="period"
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-          }}
-        />
-      </Card>
+      {/* tables */}
+      <Row gutter={[16, 16]}>
+        <Col xs={24} md={12}>
+          <Card title={<><BankOutlined /> Doanh thu theo ngân hàng</>}>
+            {loading ? (
+              <Spin />
+            ) : (
+              <Table
+                dataSource={revenueByBank}
+                rowKey="bank"
+                pagination={false}
+                size="small"
+                columns={[
+                  { title: "Ngân hàng", dataIndex: "bank", key: "bank" },
+                  { title: "Doanh thu", dataIndex: "amount", key: "amount", render: money },
+                ]}
+              />
+            )}
+          </Card>
+        </Col>
+
+        <Col xs={24} md={12}>
+          <Card title={<><LinkOutlined /> Doanh thu theo kênh thanh toán</>}>
+            {loading ? (
+              <Spin />
+            ) : (
+              <Table
+                dataSource={revenueByChannel}
+                rowKey="channel"
+                pagination={false}
+                size="small"
+                columns={[
+                  { title: "Kênh", dataIndex: "channel", key: "channel" },
+                  { title: "Doanh thu", dataIndex: "amount", key: "amount", render: money },
+                ]}
+              />
+            )}
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 };

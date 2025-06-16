@@ -14,6 +14,7 @@
     "@payos/node": "^1.0.10",
     "@tanstack/react-query": "^5.71.10",
     "@types/react-google-recaptcha": "^2.1.9",
+    "@types/uuid": "^10.0.0",
     "antd": "^5.24.6",
     "axios": "^1.8.4",
     "crypto": "^1.0.1",
@@ -33,6 +34,7 @@
     "react-toastify": "^11.0.5",
     "React-Vite-Typescript": "file:",
     "toast": "^0.5.4",
+    "uuid": "^11.1.0",
     "zod": "^3.24.2",
     "zustand": "^5.0.3"
   },

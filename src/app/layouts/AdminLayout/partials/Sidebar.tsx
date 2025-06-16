@@ -25,10 +25,10 @@ const Sidebar = () => {
 
     if (path.includes("/dashboard")) {
       setSelectedKey("/dashboard");
-    } else if (path.includes("/Products")) {
-      setSelectedKey("/Products");
-    } else if (path.includes("/revenue")) {  // Thêm điều kiện cho revenue
-      setSelectedKey("/revenue");
+    // } else if (path.includes("/Products")) {
+    //   setSelectedKey("/Products");
+    // } else if (path.includes("/revenue")) {  // Thêm điều kiện cho revenue
+    //   setSelectedKey("/revenue");
     } else {
       setSelectedKey("/dashboard");
     }
@@ -41,22 +41,22 @@ const Sidebar = () => {
       path: "/dashboard",
       className: selectedKey === "/dashboard" ? activeItemStyle : itemStyle,
       icon: <HomeOutlined />,
-    },
+    }
     
-    {
-      label: "Tổng Doanh Thu",
-      key: "/revenue",  // Đổi key thành /revenue
-      path: "/revenue", // Đổi path thành /revenue
-      className: selectedKey === "/revenue" ? activeItemStyle : itemStyle,
-      icon: <BarChartOutlined />,  // Đổi icon phù hợp
-    },
-    {
-      label: "Quản Lý Products",
-      key: "/Products",
-      path: "/Products",
-      className: selectedKey === "/Products" ? activeItemStyle : itemStyle,
-      icon: <GlobalOutlined />,
-    },
+    // {
+    //   label: "Tổng Doanh Thu",
+    //   key: "/revenue",  // Đổi key thành /revenue
+    //   path: "/revenue", // Đổi path thành /revenue
+    //   className: selectedKey === "/revenue" ? activeItemStyle : itemStyle,
+    //   icon: <BarChartOutlined />,  // Đổi icon phù hợp
+    // },
+    // {
+    //   label: "Quản Lý Products",
+    //   key: "/Products",
+    //   path: "/Products",
+    //   className: selectedKey === "/Products" ? activeItemStyle : itemStyle,
+    //   icon: <GlobalOutlined />,
+    // },
   ];
 
   return (
