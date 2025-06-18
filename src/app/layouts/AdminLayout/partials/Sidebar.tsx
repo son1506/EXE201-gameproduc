@@ -1,9 +1,8 @@
 import { Menu } from "antd";
-
 import {
-  GlobalOutlined,
   HomeOutlined,
-  BarChartOutlined  // Thêm icon cho doanh thu
+  MessageOutlined,
+  ShoppingOutlined
 } from "@ant-design/icons";
 import { Layout } from "antd";
 import { useEffect, useState } from "react";
@@ -27,8 +26,8 @@ const Sidebar = () => {
       setSelectedKey("/dashboard");
     } else if (path.includes("/Product")) {
       setSelectedKey("/Product");
-    // } else if (path.includes("/revenue")) {  // Thêm điều kiện cho revenue
-    //   setSelectedKey("/revenue");
+    } else if (path.includes("/Feedbackadmin")) {
+      setSelectedKey("/Feedbackadmin");
     } else {
       setSelectedKey("/dashboard");
     }
@@ -42,27 +41,19 @@ const Sidebar = () => {
       className: selectedKey === "/dashboard" ? activeItemStyle : itemStyle,
       icon: <HomeOutlined />,
     },
-    
-    // {
-    //   label: "Tổng Doanh Thu",
-    //   key: "/revenue",  // Đổi key thành /revenue
-    //   path: "/revenue", // Đổi path thành /revenue
-    //   className: selectedKey === "/revenue" ? activeItemStyle : itemStyle,
-    //   icon: <BarChartOutlined />,  // Đổi icon phù hợp
-    // },
     {
       label: "Quản Lý Products",
       key: "/Product",
       path: "/Product",
       className: selectedKey === "/Product" ? activeItemStyle : itemStyle,
-      icon: <GlobalOutlined />,
+      icon: <ShoppingOutlined />,
     },
     {
-      label: "Quản Lý FeedBack",
+      label: "Quản Lý Feedback",
       key: "/Feedbackadmin",
       path: "/Feedbackadmin",
       className: selectedKey === "/Feedbackadmin" ? activeItemStyle : itemStyle,
-      icon: <GlobalOutlined />,
+      icon: <MessageOutlined />,
     },
   ];
 

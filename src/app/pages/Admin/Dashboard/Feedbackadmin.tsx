@@ -79,16 +79,61 @@ const getAllFeedbacks = async () => {
   }
 };
 
+// API function để lấy thông tin sản phẩm theo ID
+const getProductById = async (productId: string) => {
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+  
+  // Lấy token từ localStorage
+  const token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('accessToken');
+  
+  try {
+    const url = `${API_BASE_URL}/api/Product/GetProductById/${encodeURIComponent(productId)}`;
+    
+    console.log("Fetching product info from:", url);
+
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      "Accept": "*/*"
+    };
+
+    // Thêm Authorization header nếu có token
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: headers
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.log("Product not found:", productId);
+        return null;
+      }
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    console.log("Product data:", result);
+    return result;
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    return null;
+  }
+};
+
 interface Feedback {
-  id: string;
-  userId?: string;
-  userName?: string;
-  userEmail?: string;
+  feedbackId: string;
+  accountId: string;
   productId: string;
-  productName?: string;
   comment: string;
   rating: number;
   createdAt: string;
+  // Optional fields có thể có từ API khác
+  userName?: string;
+  userEmail?: string;
+  productName?: string;
   status?: string;
 }
 
@@ -107,6 +152,38 @@ export default function FeedbackAdmin() {
     fetchAllFeedbacks();
   }, []);
 
+  // Enrich feedbacks với thông tin sản phẩm
+  useEffect(() => {
+    const enrichFeedbacksWithProductInfo = async () => {
+      if (feedbacks.length === 0) return;
+
+      const enrichedFeedbacks = await Promise.all(
+        feedbacks.map(async (feedback) => {
+          try {
+            const productInfo = await getProductById(feedback.productId);
+            return {
+              ...feedback,
+              productName: productInfo?.productName || 'Unknown Product'
+            };
+          } catch (error) {
+            console.error("Error fetching product info for:", feedback.productId);
+            return {
+              ...feedback,
+              productName: 'Unknown Product'
+            };
+          }
+        })
+      );
+
+      setFeedbacks(enrichedFeedbacks);
+    };
+
+    // Chỉ enrich nếu feedbacks chưa có productName
+    if (feedbacks.length > 0 && !feedbacks[0].productName) {
+      enrichFeedbacksWithProductInfo();
+    }
+  }, [feedbacks]);
+
   // Filter feedbacks khi có thay đổi
   useEffect(() => {
     filterFeedbacks();
@@ -116,10 +193,13 @@ export default function FeedbackAdmin() {
     try {
       setLoading(true);
       const data = await getAllFeedbacks();
+      
+      // Set feedback data trước, sau đó sẽ enrich với product info
       setFeedbacks(data || []);
     } catch (error) {
       const errorMessage = (error as Error).message;
       message.error(errorMessage);
+      setFeedbacks([]);
     } finally {
       setLoading(false);
     }
@@ -134,7 +214,8 @@ export default function FeedbackAdmin() {
         feedback.comment?.toLowerCase().includes(searchText.toLowerCase()) ||
         feedback.userName?.toLowerCase().includes(searchText.toLowerCase()) ||
         feedback.productName?.toLowerCase().includes(searchText.toLowerCase()) ||
-        feedback.productId?.toLowerCase().includes(searchText.toLowerCase())
+        feedback.productId?.toLowerCase().includes(searchText.toLowerCase()) ||
+        feedback.accountId?.toLowerCase().includes(searchText.toLowerCase())
       );
     }
 
@@ -201,14 +282,15 @@ export default function FeedbackAdmin() {
   const columns: ColumnsType<Feedback> = [
     {
       title: 'Người dùng',
-      dataIndex: 'userName',
-      key: 'userName',
+      dataIndex: 'accountId',
+      key: 'accountId',
       width: 150,
-      render: (name: string, record: Feedback) => (
+      render: (accountId: string, record: Feedback) => (
         <div className="flex items-center gap-2">
           <Avatar icon={<User />} size="small" className="bg-blue-100 text-blue-600" />
           <div>
-            <div className="font-medium">{name || 'Khách hàng'}</div>
+            <div className="font-medium">{record.userName || 'Khách hàng'}</div>
+            <div className="text-xs text-gray-500">ID: {accountId}</div>
             {record.userEmail && (
               <div className="text-xs text-gray-500">{record.userEmail}</div>
             )}
@@ -218,13 +300,13 @@ export default function FeedbackAdmin() {
     },
     {
       title: 'Sản phẩm',
-      dataIndex: 'productName',
-      key: 'productName',
+      dataIndex: 'productId',
+      key: 'productId',
       width: 200,
-      render: (name: string, record: Feedback) => (
+      render: (productId: string, record: Feedback) => (
         <div>
-          <div className="font-medium">{name || 'Unknown Product'}</div>
-          <div className="text-xs text-gray-500">ID: {record.productId}</div>
+          <div className="font-medium">{record.productName || 'Unknown Product'}</div>
+          <div className="text-xs text-gray-500">ID: {productId}</div>
         </div>
       ),
     },
@@ -450,6 +532,7 @@ export default function FeedbackAdmin() {
                 <div>
                   <label className="text-sm font-medium text-gray-500">Người dùng</label>
                   <p className="mt-1">{selectedFeedback.userName || 'Khách hàng'}</p>
+                  <p className="text-sm text-gray-500">Account ID: {selectedFeedback.accountId}</p>
                   {selectedFeedback.userEmail && (
                     <p className="text-sm text-gray-500">{selectedFeedback.userEmail}</p>
                   )}
@@ -457,7 +540,7 @@ export default function FeedbackAdmin() {
                 <div>
                   <label className="text-sm font-medium text-gray-500">Sản phẩm</label>
                   <p className="mt-1">{selectedFeedback.productName || 'Unknown Product'}</p>
-                  <p className="text-sm text-gray-500">ID: {selectedFeedback.productId}</p>
+                  <p className="text-sm text-gray-500">Product ID: {selectedFeedback.productId}</p>
                 </div>
               </div>
               
