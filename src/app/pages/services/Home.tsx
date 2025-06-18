@@ -8,7 +8,8 @@ import merchandise from "../../assets/Merchandise.jpg";
 import character2 from "../../assets/Character2.png";
 import logopage2 from "../../assets/logo_2.png";
 import Chatbot from "../../components/Chatbot";
-
+import gallery from "../../assets/Gallery.jpg";
+import merchandise2 from "../../assets/Merchandise2.png";
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [email, setEmail] = useState("");
@@ -152,7 +153,7 @@ export default function Home() {
             <div className="relative max-w-2xl mx-auto mb-8">
               <div className="bg-white rounded-2xl border-4 border-white shadow-2xl overflow-hidden">
                 <img
-                  src={galleryImages[currentSlide] || "/placeholder.svg"}
+                  src={gallery}
                   alt={`Gallery ${currentSlide + 1}`}
                   className="w-full h-80 object-cover"
                 />
@@ -203,7 +204,7 @@ export default function Home() {
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-br from-pink-200 to-rose-200 rounded-3xl transform rotate-3 group-hover:rotate-6 transition-transform duration-300"></div>
                   <img
-                    src={merchandise}
+                    src={merchandise2}
                     alt="Merchandise"
                     className="relative z-10 w-full rounded-2xl border-4 border-gray-800 shadow-2xl transform group-hover:scale-105 transition-transform duration-300"
                   />
