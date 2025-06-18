@@ -155,7 +155,7 @@ export default function Home() {
                 <img
                   src={gallery}
                   alt={`Gallery ${currentSlide + 1}`}
-                  className="w-full h-80 object-cover"
+                  className="w-full h-70 object-cover"
                 />
               </div>
 
