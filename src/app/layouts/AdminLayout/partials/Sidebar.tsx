@@ -25,8 +25,8 @@ const Sidebar = () => {
 
     if (path.includes("/dashboard")) {
       setSelectedKey("/dashboard");
-    // } else if (path.includes("/Products")) {
-    //   setSelectedKey("/Products");
+    } else if (path.includes("/Product")) {
+      setSelectedKey("/Product");
     // } else if (path.includes("/revenue")) {  // Thêm điều kiện cho revenue
     //   setSelectedKey("/revenue");
     } else {
@@ -41,7 +41,7 @@ const Sidebar = () => {
       path: "/dashboard",
       className: selectedKey === "/dashboard" ? activeItemStyle : itemStyle,
       icon: <HomeOutlined />,
-    }
+    },
     
     // {
     //   label: "Tổng Doanh Thu",
@@ -50,13 +50,20 @@ const Sidebar = () => {
     //   className: selectedKey === "/revenue" ? activeItemStyle : itemStyle,
     //   icon: <BarChartOutlined />,  // Đổi icon phù hợp
     // },
-    // {
-    //   label: "Quản Lý Products",
-    //   key: "/Products",
-    //   path: "/Products",
-    //   className: selectedKey === "/Products" ? activeItemStyle : itemStyle,
-    //   icon: <GlobalOutlined />,
-    // },
+    {
+      label: "Quản Lý Products",
+      key: "/Product",
+      path: "/Product",
+      className: selectedKey === "/Product" ? activeItemStyle : itemStyle,
+      icon: <GlobalOutlined />,
+    },
+    {
+      label: "Quản Lý FeedBack",
+      key: "/Feedbackadmin",
+      path: "/Feedbackadmin",
+      className: selectedKey === "/Feedbackadmin" ? activeItemStyle : itemStyle,
+      icon: <GlobalOutlined />,
+    },
   ];
 
   return (

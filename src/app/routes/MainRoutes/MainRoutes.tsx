@@ -21,6 +21,9 @@ import Customize from "@/app/pages/services/Customize/Customize";
 import Support from "@/app/pages/services/Support/Support";
 import Aboutus from "@/app/pages/services/Aboutus.tsx/Aboutus";
 import Contact from "@/app/pages/services/Contact/Contact";
+import PaymentDashboard from "../../pages/Admin/Dashboard/Dashboard";
+import ProductCRUD from "@/app/pages/Admin/Dashboard/ProductCRUD";
+import FeedbackAdmin from "@/app/pages/Admin/Dashboard/Feedbackadmin";
 
 
 
@@ -54,6 +57,8 @@ const MainRoutes = () => {
         <Route path="" element={<Navigate to="/dashboard" />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="/revenue" element={<RevenuePage />} />
+        <Route path="/Product" element={<ProductCRUD />} />
+        <Route path="/Feedbackadmin" element={<FeedbackAdmin />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
