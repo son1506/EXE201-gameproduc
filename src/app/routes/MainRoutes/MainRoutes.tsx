@@ -16,6 +16,11 @@ import CancelPage from "@/app/pages/services/Payment/CancelPage";
 import RevenuePage from "@/app/pages/Admin/Dashboard/RevenuePage";
 import Merchandise from "@/app/pages/services/Merchandise/Merchandise";
 import Merchandisedetail from "@/app/pages/services/Merchandise/Merchandisedetail";
+import Gameplay from "@/app/pages/services/Gameplay/Gameplay";
+import Customize from "@/app/pages/services/Customize/Customize";
+import Support from "@/app/pages/services/Support/Support";
+import Aboutus from "@/app/pages/services/Aboutus.tsx/Aboutus";
+import Contact from "@/app/pages/services/Contact/Contact";
 
 
 
@@ -34,7 +39,12 @@ const MainRoutes = () => {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/merchandise" element={<Merchandise />} />
         <Route path="/merchandise/detail/:productId" element={<Merchandisedetail />} />
-
+        <Route path="/gameplay" element={<Gameplay />} />
+        <Route path="/customize" element={<Customize />} />
+        <Route path="/support" element={<Support />} />
+        <Route path="/about" element={<Aboutus />} />
+        <Route path="/contact" element={<Contact />} />
+        
         <Route path="/payos-redirect" element={<PayOSRedirectPage />} />
         <Route path="/return-url" element={<ReturnPage />} />
         <Route path="/cancel-url" element={<CancelPage />} />
