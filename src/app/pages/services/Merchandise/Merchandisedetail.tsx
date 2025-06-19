@@ -320,35 +320,40 @@ export default function MerchandiseDetail() {
     });
   };
 
-  const handleAddToCart = async () => {
-    setLoading(true);
-    try {
-      const paymentData = {
-        amount: 10000,
-        description: "Nạp tiền vào tài khoản",
-        returnUrl: "http://localhost:5173/return-url",
-        cancelUrl: "http://localhost:5173/cancel-url",
-      };
+const handleAddToCart = async () => {
+  setLoading(true);
+  try {
+    // Use VITE_BASE_URL from environment variables, fallback to localhost
+    const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:5173';
 
-      const response = await createPaymentLink(paymentData);
+    const paymentData = {
+      amount: 10000,
+      description: 'Nạp tiền vào tài khoản',
+      returnUrl: `${baseUrl}/products`,
+      cancelUrl: `${baseUrl}/products`,
+    };
 
-      if (!response.checkoutUrl) {
-        throw new Error("Không tìm thấy URL thanh toán.");
-      }
+    console.log('Payment data:', paymentData);
 
-      localStorage.setItem("pendingAmount", paymentData.amount.toString());
-      message.success("Đang chuyển hướng đến trang thanh toán...");
+    const response = await createPaymentLink(paymentData);
 
-      setTimeout(() => {
-        window.location.href = response.checkoutUrl;
-      }, 1000);
-    } catch (error) {
-      console.error("Lỗi khi tạo link thanh toán:", error);
-      message.error((error as Error).message || "Có lỗi xảy ra khi tạo link thanh toán.");
-    } finally {
-      setLoading(false);
+    if (!response.checkoutUrl) {
+      throw new Error('Không tìm thấy URL thanh toán.');
     }
-  };
+
+    localStorage.setItem('pendingAmount', paymentData.amount.toString());
+    message.success('Đang chuyển hướng đến trang thanh toán...');
+
+    setTimeout(() => {
+      window.location.href = response.checkoutUrl;
+    }, 1000);
+  } catch (error) {
+    console.error('Lỗi khi tạo link thanh toán:', error);
+    message.error((error as Error).message || 'Có lỗi xảy ra khi tạo link thanh toán.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleBack = () => {
     navigate(-1);
