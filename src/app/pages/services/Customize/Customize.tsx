@@ -1,8 +1,17 @@
 
 import { useState } from "react"
-import { Button, Slider, ColorPicker } from "antd"
+import { Button, Slider, ColorPicker, message } from "antd"
 import { Palette, Shirt, Crown, Sparkles, Save, RotateCcw, Eye, Heart, Star, Zap } from "lucide-react"
-import gallery from "../../../assets/Gallery.jpg";
+import { useNavigate } from "react-router-dom"
+import Chocomit from "../../../assets/Chocomint.png"
+import Crossaint from "../../../assets/Crossaint.png"
+import Main from "../../../assets/Main.png"
+import Matcharoll from "../../../assets/Matcharoll.png"
+import Pancake from "../../../assets/Pancake.png"
+import Pudding from "../../../assets/Pudding.png"
+import Shortcake from "../../../assets/Shortcake.png"
+import Strawberry from "../../../assets/Strawberry.png"
+
 export default function Customize() {
     const [selectedCharacter, setSelectedCharacter] = useState(0)
     const [selectedCategory, setSelectedCategory] = useState("outfits")
@@ -10,30 +19,54 @@ export default function Customize() {
     const [selectedAccessory, setSelectedAccessory] = useState(0)
     const [selectedColor, setSelectedColor] = useState("#ff69b4")
     const [characterSize, setCharacterSize] = useState(100)
-
+    const navigate = useNavigate()
     const characters = [
         {
-            name: "Choco",
-            baseImage: "/placeholder.svg?height=300&width=300",
-            description: "Sweet chocolate character",
+            name: "Main Character",
+            baseImage: Main,
+            description: "The original hero of Sweeties Dodging",
             unlocked: true,
         },
         {
             name: "Strawberry",
-            baseImage: "/placeholder.svg?height=300&width=300",
+            baseImage: Strawberry,
             description: "Berry princess character",
             unlocked: true,
         },
         {
-            name: "Vanilla",
-            baseImage: "/placeholder.svg?height=300&width=300",
-            description: "Calm vanilla character",
+            name: "Chocomint",
+            baseImage: Chocomit,
+            description: "Cool chocolate-mint fusion",
+            unlocked: true,
+        },
+        {
+            name: "Croissant",
+            baseImage: Crossaint,
+            description: "Flaky pastry character",
+            unlocked: true,
+        },
+        {
+            name: "Matcha Roll",
+            baseImage: Matcharoll,
+            description: "Zen green tea master",
             unlocked: false,
         },
         {
-            name: "Mint",
-            baseImage: "/placeholder.svg?height=300&width=300",
-            description: "Cool mint character",
+            name: "Pancake",
+            baseImage: Pancake,
+            description: "Fluffy stack character",
+            unlocked: false,
+        },
+        {
+            name: "Pudding",
+            baseImage: Pudding,
+            description: "Wobbly dessert character",
+            unlocked: false,
+        },
+        {
+            name: "Shortcake",
+            baseImage: Shortcake,
+            description: "Elegant cake character",
             unlocked: false,
         },
     ]
@@ -51,21 +84,21 @@ export default function Customize() {
     ]
 
     const outfits = [
-        { name: "Default", image: "https://tse4.mm.bing.net/th?id=OIP.L_8WysYpyum7RIaa2CzJ6QHaEK&pid=Api&P=0&h=180", price: "Free", unlocked: true },
-        { name: "Princess Dress", image: "https://tse4.mm.bing.net/th?id=OIP.r9kOEZ76Dmo6SRjBu9n0CwHaEK&pid=Api&P=0&h=180", price: "100 coins", unlocked: true },
-        { name: "Ninja Outfit", image: "https://tse1.mm.bing.net/th?id=OIP.C0Q7txKa6lFP8luorECYDgHaEo&pid=Api&P=0&h=180", price: "200 coins", unlocked: false },
-        { name: "Wizard Robe", image: "https://tse4.mm.bing.net/th?id=OIP._HT_Jd7jjMK06ViuNGh84AAAAA&pid=Api&P=0&h=180", price: "300 coins", unlocked: false },
-        { name: "Superhero Suit", image: "https://tse4.mm.bing.net/th?id=OIP.Q2qx9mrFz9CkZkkESlkzbQHaHa&pid=Api&P=0&h=180", price: "500 coins", unlocked: false },
-        { name: "Pirate Costume", image: "https://tse2.mm.bing.net/th?id=OIP.3qDMqDxISkobz2Ccp0W0RAHaEo&pid=Api&P=0&h=180", price: "400 coins", unlocked: false },
+        { name: "Default", image: "https://tse3.mm.bing.net/th?id=OIP.ohIh99UfqHe6sPs7UgBPYgHaHa&pid=Api&P=0&h=180", price: "Free", unlocked: true },
+        { name: "Princess Dress", image: "https://tse3.mm.bing.net/th?id=OIP.uXbXjtTxS6DAQC3j5c_bdwAAAA&pid=Api&P=0&h=180", price: "100 coins", unlocked: true },
+        { name: "Ninja Outfit", image: "https://tse4.mm.bing.net/th?id=OIP.SFgyfv5mwjaQllHeJwKfEQHaHa&pid=Api&P=0&h=180", price: "200 coins", unlocked: false },
+        { name: "Wizard Robe", image: "https://tse3.mm.bing.net/th?id=OIP.-T5zBfCdlU7Wj5LmkDzUMQHaHa&pid=Api&P=0&h=180", price: "300 coins", unlocked: false },
+        { name: "Superhero Suit", image: "https://tse4.mm.bing.net/th?id=OIP.jbtd16Bb0MlgHp7DXNTxGQHaJ4&pid=Api&P=0&h=180", price: "500 coins", unlocked: false },
+        { name: "Pirate Costume", image: "https://tse3.mm.bing.net/th?id=OIP.--eZt8_LhjzFDgM1qtQMegHaI4&pid=Api&P=0&h=180", price: "400 coins", unlocked: false },
     ]
 
     const accessories = [
-        { name: "None", image: "https://tse1.mm.bing.net/th?id=OIP.CDROpBwiOYGRbn47lSMz0QHaEo&pid=Api&P=0&h=180", price: "Free", unlocked: true },
-        { name: "Crown", image: "https://tse2.mm.bing.net/th?id=OIP.MYfLAHF3UUNfJwj7xnfP3gHaEQ&pid=Api&P=0&h=180", price: "150 coins", unlocked: true },
-        { name: "Glasses", image: "https://tse2.mm.bing.net/th?id=OIP.c3SVgO5pzfnfCv_uxUmd4AHaEK&pid=Api&P=0&h=180", price: "100 coins", unlocked: true },
-        { name: "Hat", image: "https://tse2.mm.bing.net/th?id=OIP.nD5tBiYc3pTb9sLVsZOfvAHaJD&pid=Api&P=0&h=180", price: "200 coins", unlocked: false },
-        { name: "Wings", image: "https://tse1.mm.bing.net/th?id=OIP.6GvCb3WGG3dPGuxMXbzXJgHaEK&pid=Api&P=0&h=180", price: "400 coins", unlocked: false },
-        { name: "Halo", image: "https://tse3.mm.bing.net/th?id=OIP.o83CVmAqCzYE1BIbPYr93gHaKe&pid=Api&P=0&h=180", price: "300 coins", unlocked: false },
+        { name: "None", image: "https://tse3.mm.bing.net/th?id=OIP.jY2kpkFRO0pSKncmJQ8AMgAAAA&pid=Api&P=0&h=180", price: "Free", unlocked: true },
+        { name: "Crown", image: "https://tse3.mm.bing.net/th?id=OIP.fQr1zy0q4Z-1Q-MMTEuKnwHaHa&pid=Api&P=0&h=180", price: "150 coins", unlocked: true },
+        { name: "Glasses", image: "https://tse4.mm.bing.net/th?id=OIP.JMF1wRPzWuHzgWNvqdlMwQHaFw&pid=Api&P=0&h=180", price: "100 coins", unlocked: true },
+        { name: "Hat", image: "https://tse2.mm.bing.net/th?id=OIP.zfSToXjKxPprNs7JwKD6kQHaHI&pid=Api&P=0&h=180", price: "200 coins", unlocked: false },
+        { name: "Wings", image: "https://tse1.mm.bing.net/th?id=OIP.MkMIzrPafEOX0neKfatoRAHaHa&pid=Api&P=0&h=180", price: "400 coins", unlocked: false },
+        { name: "Halo", image: "https://tse2.mm.bing.net/th?id=OIP.WofbttkqsQNgSH4yvgzW5gHaHa&pid=Api&P=0&h=180", price: "300 coins", unlocked: false },
     ]
 
     const colorPresets = [
@@ -91,9 +124,14 @@ export default function Customize() {
         { name: "Lightning", icon: <Zap className="w-6 h-6" />, price: "500 coins", unlocked: false },
     ]
 
-    const handleSaveCustomization = () => {
-        console.log("Saving customization...")
-        // Add save logic here
+    const handleSaveCustomization = (): void => {
+        message.loading({ content: "Saving customizations…", key: "saving" })
+
+        setTimeout(() => {
+            message.success({ content: "Redirecting to Facebook…", key: "saving", duration: 1 })
+            window.location.href = "https://www.facebook.com/sweetiesdodging"
+            // navigate("/facebook") // nếu dùng route nội bộ
+        }, 800)
     }
 
     const handleResetCustomization = () => {
@@ -264,11 +302,11 @@ export default function Customize() {
                             <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">👀 Preview</h2>
 
                             {/* Character Selection */}
-                            <div className="grid grid-cols-2 gap-3 mb-6">
+                            <div className="grid grid-cols-2 gap-2 mb-6 max-h-80 overflow-y-auto">
                                 {characters.map((character, index) => (
                                     <button
                                         key={index}
-                                        className={`p-3 rounded-2xl border-3 transition-all duration-200 ${selectedCharacter === index
+                                        className={`p-2 rounded-2xl border-3 transition-all duration-200 ${selectedCharacter === index
                                             ? "border-pink-400 bg-pink-50"
                                             : "border-pink-200 hover:border-pink-300"
                                             } ${!character.unlocked ? "opacity-50" : ""}`}
@@ -276,11 +314,11 @@ export default function Customize() {
                                         disabled={!character.unlocked}
                                     >
                                         <img
-                                            src={gallery}
+                                            src={character.baseImage || "/placeholder.svg"}
                                             alt={character.name}
-                                            className="w-full aspect-square object-contain mb-2"
+                                            className="w-full aspect-square object-contain mb-1"
                                         />
-                                        <p className="text-sm font-bold text-center">{character.name}</p>
+                                        <p className="text-xs font-bold text-center">{character.name}</p>
                                         {!character.unlocked && <p className="text-xs text-red-500 text-center">LOCKED</p>}
                                     </button>
                                 ))}
@@ -296,7 +334,7 @@ export default function Customize() {
                                     }}
                                 >
                                     <img
-                                        src={gallery}
+                                        src={characters[selectedCharacter]?.baseImage || "/placeholder.svg"}
                                         alt="Character Preview"
                                         className="w-full aspect-square object-contain drop-shadow-2xl"
                                     />

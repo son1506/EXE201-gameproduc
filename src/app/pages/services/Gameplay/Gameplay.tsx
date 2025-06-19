@@ -2,7 +2,15 @@
 import { useState } from "react"
 import { Button } from "antd"
 import { Play, Download, Gamepad2, Trophy, Users, Star, Heart, Zap, Target } from "lucide-react"
-import gallery from "../../../assets/Gallery.jpg";
+import Chocomit from "../../../assets/Chocomint.png"
+import Crossaint from "../../../assets/Crossaint.png"
+import Main from "../../../assets/Main.png"
+import Matcharoll from "../../../assets/Matcharoll.png"
+import Pancake from "../../../assets/Pancake.png"
+import Pudding from "../../../assets/Pudding.png"
+import Shortcake from "../../../assets/Shortcake.png"
+import Strawberry from "../../../assets/Strawberry.png"
+
 export default function Gameplay() {
     const [activeFeature, setActiveFeature] = useState(0)
     const [selectedCharacter, setSelectedCharacter] = useState(0)
@@ -36,39 +44,67 @@ export default function Gameplay() {
 
     const characters = [
         {
-            name: "Choco",
-            description: "The sweet chocolate lover with incredible speed",
-            image: "/placeholder.svg?height=200&width=200",
-            abilities: ["Speed Boost", "Chocolate Shield", "Sweet Jump"],
-            color: "from-amber-400 to-orange-500",
+            name: "Main Character",
+            description: "The original hero of Sweeties Dodging with balanced abilities",
+            image: Main,
+            abilities: ["Balanced Stats", "Quick Recovery", "Versatile Skills"],
+            color: "from-pink-400 to-rose-500",
         },
         {
             name: "Strawberry",
             description: "The berry princess with magical healing powers",
-            image: "/placeholder.svg?height=200&width=200",
+            image: Strawberry,
             abilities: ["Health Regen", "Berry Blast", "Pink Shield"],
-            color: "from-pink-400 to-rose-500",
+            color: "from-red-400 to-pink-500",
         },
         {
-            name: "Vanilla",
-            description: "The calm and collected master of precision",
-            image: "/placeholder.svg?height=200&width=200",
-            abilities: ["Precision Mode", "Time Slow", "Perfect Dodge"],
-            color: "from-yellow-200 to-yellow-400",
-        },
-        {
-            name: "Mint",
-            description: "The cool character with ice-cold reflexes",
-            image: "/placeholder.svg?height=200&width=200",
-            abilities: ["Ice Shield", "Freeze Time", "Cool Dash"],
+            name: "Chocomint",
+            description: "The cool chocolate-mint fusion with dual powers",
+            image: Chocomit,
+            abilities: ["Ice Shield", "Chocolate Boost", "Mint Fresh"],
             color: "from-green-400 to-teal-500",
+        },
+        {
+            name: "Croissant",
+            description: "The flaky pastry character with crispy defense",
+            image: Crossaint,
+            abilities: ["Crispy Shield", "Buttery Smooth", "Golden Glow"],
+            color: "from-yellow-400 to-orange-500",
+        },
+        {
+            name: "Matcha Roll",
+            description: "The zen master with green tea wisdom",
+            image: Matcharoll,
+            abilities: ["Zen Mode", "Green Power", "Roll Dodge"],
+            color: "from-green-300 to-green-600",
+        },
+        {
+            name: "Pancake",
+            description: "The fluffy stack with syrup-sweet abilities",
+            image: Pancake,
+            abilities: ["Fluffy Jump", "Syrup Trap", "Stack Power"],
+            color: "from-amber-300 to-yellow-500",
+        },
+        {
+            name: "Pudding",
+            description: "The wobbly dessert with jiggly movements",
+            image: Pudding,
+            abilities: ["Jiggle Dodge", "Creamy Shield", "Sweet Bounce"],
+            color: "from-yellow-200 to-amber-400",
+        },
+        {
+            name: "Shortcake",
+            description: "The elegant cake character with strawberry crown",
+            image: Shortcake,
+            abilities: ["Royal Grace", "Strawberry Rain", "Cake Layer"],
+            color: "from-pink-300 to-red-400",
         },
     ]
 
     const gameStats = [
         { label: "Active Players", value: "50K+", icon: <Users className="w-6 h-6" /> },
         { label: "Levels Available", value: "100+", icon: <Target className="w-6 h-6" /> },
-        { label: "Characters", value: "12", icon: <Heart className="w-6 h-6" /> },
+        { label: "Characters", value: "8", icon: <Heart className="w-6 h-6" /> },
         { label: "Power-ups", value: "25+", icon: <Zap className="w-6 h-6" /> },
     ]
 
@@ -97,7 +133,7 @@ export default function Gameplay() {
                 </div>
 
                 <div className="relative z-10 max-w-6xl mx-auto text-center">
-                    <h1 className="text-6xl md:text-8xl font-bold text-white drop-shadow-2xl mb-6"> GAMEPLAY</h1>
+                    <h1 className="text-6xl md:text-8xl font-bold text-white drop-shadow-2xl mb-6">🎮 GAMEPLAY</h1>
                     <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
                         Experience the most addictive dodging game ever created! Navigate through magical worlds, avoid obstacles,
                         and collect sweet rewards in this enchanting adventure.
@@ -187,36 +223,40 @@ export default function Gameplay() {
 
             {/* Characters Section */}
             <section className="py-20 px-4">
-                <div className="max-w-6xl mx-auto">
+                <div className="max-w-7xl mx-auto">
                     <h2 className="text-5xl font-bold text-center text-transparent bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text mb-16">
                         🎭 Choose Your Character
                     </h2>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                    {/* Character Grid - Now shows all 8 characters */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6 mb-12">
                         {characters.map((character, index) => (
                             <div
                                 key={index}
-                                className={`bg-white/90 backdrop-blur-sm rounded-3xl overflow-hidden shadow-xl border-4 transition-all duration-300 cursor-pointer transform hover:scale-105 ${selectedCharacter === index ? "border-pink-400 shadow-2xl" : "border-pink-200"
+                                className={`bg-white/90 backdrop-blur-sm rounded-3xl overflow-hidden shadow-xl border-4 transition-all duration-300 cursor-pointer transform hover:scale-105 ${selectedCharacter === index ? "border-pink-400 shadow-2xl ring-4 ring-pink-200" : "border-pink-200"
                                     }`}
                                 onClick={() => setSelectedCharacter(index)}
                             >
-                                <div className={`aspect-square bg-gradient-to-br ${character.color} p-6`}>
+                                <div className={`aspect-square bg-gradient-to-br ${character.color} p-4`}>
                                     <img
-                                        src={gallery}
+                                        src={character.image || "/placeholder.svg"}
                                         alt={character.name}
                                         className="w-full h-full object-contain drop-shadow-lg"
                                     />
                                 </div>
-                                <div className="p-6">
-                                    <h3 className="text-2xl font-bold text-gray-800 mb-2">{character.name}</h3>
-                                    <p className="text-gray-600 text-sm mb-4">{character.description}</p>
-                                    <div className="space-y-2">
-                                        {character.abilities.map((ability, abilityIndex) => (
+                                <div className="p-4">
+                                    <h3 className="text-lg font-bold text-gray-800 mb-2 text-center">{character.name}</h3>
+                                    <p className="text-gray-600 text-xs text-center mb-3 line-clamp-2">{character.description}</p>
+                                    <div className="space-y-1">
+                                        {character.abilities.slice(0, 2).map((ability, abilityIndex) => (
                                             <div key={abilityIndex} className="flex items-center gap-2">
-                                                <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
-                                                <span className="text-sm text-gray-700">{ability}</span>
+                                                <div className="w-1.5 h-1.5 bg-pink-400 rounded-full flex-shrink-0"></div>
+                                                <span className="text-xs text-gray-700 truncate">{ability}</span>
                                             </div>
                                         ))}
+                                        {character.abilities.length > 2 && (
+                                            <div className="text-xs text-pink-500 text-center">+{character.abilities.length - 2} more</div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -225,20 +265,49 @@ export default function Gameplay() {
 
                     {/* Selected Character Details */}
                     <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-pink-200">
-                        <div className="text-center">
-                            <h3 className="text-3xl font-bold text-transparent bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text mb-4">
-                                {characters[selectedCharacter].name}
-                            </h3>
-                            <p className="text-xl text-gray-700 mb-6">{characters[selectedCharacter].description}</p>
-                            <div className="flex flex-wrap justify-center gap-3">
-                                {characters[selectedCharacter].abilities.map((ability, index) => (
-                                    <span
-                                        key={index}
-                                        className={`px-4 py-2 rounded-full text-white font-bold bg-gradient-to-r ${characters[selectedCharacter].color}`}
-                                    >
-                                        {ability}
-                                    </span>
-                                ))}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                            {/* Character Image */}
+                            <div className="lg:col-span-1">
+                                <div
+                                    className={`aspect-square bg-gradient-to-br ${characters[selectedCharacter].color} rounded-3xl p-8`}
+                                >
+                                    <img
+                                        src={characters[selectedCharacter].image || "/placeholder.svg"}
+                                        alt={characters[selectedCharacter].name}
+                                        className="w-full h-full object-contain drop-shadow-2xl"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Character Info */}
+                            <div className="lg:col-span-2 text-center lg:text-left">
+                                <h3 className="text-4xl font-bold text-transparent bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text mb-4">
+                                    {characters[selectedCharacter].name}
+                                </h3>
+                                <p className="text-xl text-gray-700 mb-6 leading-relaxed">
+                                    {characters[selectedCharacter].description}
+                                </p>
+
+                                <div className="mb-6">
+                                    <h4 className="text-lg font-bold text-gray-800 mb-3">✨ Special Abilities</h4>
+                                    <div className="flex flex-wrap justify-center lg:justify-start gap-3">
+                                        {characters[selectedCharacter].abilities.map((ability, index) => (
+                                            <span
+                                                key={index}
+                                                className={`px-4 py-2 rounded-full text-white font-bold bg-gradient-to-r ${characters[selectedCharacter].color} shadow-lg`}
+                                            >
+                                                {ability}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <Button
+                                    size="large"
+                                    className={`bg-gradient-to-r ${characters[selectedCharacter].color} hover:opacity-90 text-white border-none rounded-full px-8 py-3 font-pixel text-lg font-bold shadow-xl transform hover:scale-105 transition-all duration-200`}
+                                >
+                                    Select {characters[selectedCharacter].name}
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -284,7 +353,7 @@ export default function Gameplay() {
             <section className="py-20 px-4 text-center">
                 <div className="max-w-4xl mx-auto">
                     <div className="bg-gradient-to-r from-pink-500 to-rose-500 rounded-3xl p-12 text-white shadow-2xl">
-                        <h2 className="text-4xl md:text-6xl font-bold mb-6">Ready to Play? </h2>
+                        <h2 className="text-4xl md:text-6xl font-bold mb-6">Ready to Play? 🎮</h2>
                         <p className="text-xl mb-8 opacity-90">
                             Join thousands of players in the sweetest dodging adventure ever created!
                         </p>
