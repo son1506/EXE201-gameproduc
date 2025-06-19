@@ -27,7 +27,7 @@ app.get("/", (_, res) => {
 /* ------------------- 1. Tạo payment‑link ------------------ */
 app.post("/api/create-payment-link", async (req, res) => {
   const { orderCode, amount, description } = req.body;
-  const FRONTEND_DOMAIN = process.env.FRONTEND_DOMAIN || "http://localhost:5173" ||"https://exe-201-gameproduct-2.vercel.app/";
+  const FRONTEND_DOMAIN = process.env.FRONTEND_DOMAIN || "http://localhost:5173" ||"https://exe-201-gameproduct-2.vercel.app";
 
   try {
     const paymentLink = await payos.createPaymentLink({

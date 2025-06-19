@@ -36,11 +36,11 @@ const CATEGORY_NAMES: Record<string, string> = {
 // Lấy dữ liệu sản phẩm với cache
 const getProductsData = async (): Promise<Product[]> => {
   const now = Date.now();
-  
+
   if (productsCache && (now - cacheTimestamp) < CACHE_DURATION) {
     return productsCache;
   }
-  
+
   try {
     const products = await getAllProducts();
     productsCache = products.filter((product: Product) => product.isActive);
@@ -67,7 +67,7 @@ const formatPrice = (price: number): string => {
 const createSystemPrompt = async (): Promise<string> => {
   try {
     const products = await getProductsData();
-    
+
     if (products.length === 0) {
       return `Bạn là Sweeties AI - trợ lý thông minh của cửa hàng Sweeties Dodging. 
 Bạn bán merchandise chính thức của game Sweeties Dodging.
@@ -154,7 +154,7 @@ export async function callchat(chatMessages: Message[]): Promise<string> {
     });
 
     console.log("📡 Response status:", response.status);
-    
+
     const data = await response.json();
     console.log("📝 Response data:", data);
 
@@ -170,9 +170,9 @@ export async function callchat(chatMessages: Message[]): Promise<string> {
     return data.choices[0].message.content;
   } catch (err: unknown) {
     console.error("🚨 Chatbot Error:", err);
-    
+
     const errorMessage = err instanceof Error ? err.message : "Lỗi không xác định";
-    
+
     // Xử lý các lỗi phổ biến
     if (errorMessage.includes("401")) {
       message.error("API key không hợp lệ. Kiểm tra lại cấu hình.");
@@ -183,7 +183,7 @@ export async function callchat(chatMessages: Message[]): Promise<string> {
     } else {
       message.error(errorMessage || "Có lỗi xảy ra khi gọi chatbot.");
     }
-    
+
     throw err;
   }
 }
