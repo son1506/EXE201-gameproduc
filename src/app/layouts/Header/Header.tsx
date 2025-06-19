@@ -1,9 +1,9 @@
-
 import { Button, message } from "antd"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Menu, X, User, LogOut } from "lucide-react"
 import logopage from "../../assets/Logo_page.png";
+
 export default function Header() {
   const navigate = useNavigate()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -36,7 +36,7 @@ export default function Header() {
   ]
 
   return (
-    <header className="bg-gradient-to-r from-pink-50 to-rose-50 border-b-4 border-pink-200 shadow-lg relative overflow-hidden">
+    <header className="bg-gradient-to-r from-pink-50 to-rose-50 border-b-4 border-pink-200 shadow-lg fixed top-0 left-0 right-0 z-50 overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-2 left-10 w-6 h-6 bg-pink-300 rounded-full"></div>
@@ -127,7 +127,7 @@ export default function Header() {
 
         {/* Mobile Navigation Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-pink-200 shadow-lg z-50">
+          <div className="lg:hidden absolute top-20 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-pink-200 shadow-lg z-50">
             <div className="px-4 py-6 space-y-3">
               {navigationItems.map((item, index) => (
                 <a

@@ -167,7 +167,7 @@ export default function Merchandise() {
             </section>
 
             {/* Tabs */}
-            <section className="bg-white/80 backdrop-blur-sm border-b border-pink-200 sticky top-0 z-40">
+            <section className="bg-white/80 backdrop-blur-sm border-b border-pink-200  top-0 z-40">
                 <div className="max-w-6xl mx-auto px-4 py-6">
                     <div className="flex flex-wrap justify-center gap-2">
                         {tabs.map((tab) => (
