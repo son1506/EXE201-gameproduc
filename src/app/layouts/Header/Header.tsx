@@ -1,30 +1,34 @@
-import { Button, message } from "antd"
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { Menu, X, User, LogOut } from "lucide-react"
+import { Button, message } from "antd";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom"; // Thêm useLocation
+import { Menu, X, User, LogOut } from "lucide-react";
 import logopage from "../../assets/Logo_page.png";
 
 export default function Header() {
-  const navigate = useNavigate()
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [accountName, setAccountName] = useState("")
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const navigate = useNavigate();
+  const location = useLocation(); // Lấy location để theo dõi thay đổi route
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [accountName, setAccountName] = useState("");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const status = localStorage.getItem("isLoggedIn")
-    const storedName = localStorage.getItem("accountName")
-    setIsLoggedIn(status === "true")
-    setAccountName(storedName || "")
-  }, [])
+    // Kiểm tra localStorage mỗi khi route thay đổi
+    const status = localStorage.getItem("isLoggedIn");
+    const storedName = localStorage.getItem("accountName");
+    setIsLoggedIn(status === "true");
+    setAccountName(storedName || "");
+  }, [location.pathname]); // Thêm location.pathname vào dependency array
 
   const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn")
-    localStorage.removeItem("accountName")
-    setIsLoggedIn(false)
-    setAccountName("")
-    message.success("Logout successful")
-    navigate("/")
-  }
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("accountName");
+    localStorage.removeItem("token");
+    localStorage.removeItem("authToken");
+    setIsLoggedIn(false);
+    setAccountName("");
+    message.success("Logout successful");
+    navigate("/");
+  };
 
   const navigationItems = [
     { name: "Customize", href: "/customize" },
@@ -33,7 +37,7 @@ export default function Header() {
     { name: "Support", href: "/support" },
     { name: "About Us", href: "/about" },
     { name: "Contact", href: "/contact" },
-  ]
+  ];
 
   return (
     <header className="bg-gradient-to-r from-pink-50 to-rose-50 border-b-4 border-pink-200 shadow-lg fixed top-0 left-0 right-0 z-20 overflow-hidden">
@@ -87,8 +91,8 @@ export default function Header() {
                 <a
                   href="#logout"
                   onClick={(e) => {
-                    e.preventDefault()
-                    handleLogout()
+                    e.preventDefault();
+                    handleLogout();
                   }}
                   className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-teal-400 to-cyan-400 text-white rounded-full font-pixel text-sm font-bold hover:from-teal-500 hover:to-cyan-500 transform hover:scale-105 transition-all duration-200 shadow-md cursor-pointer"
                 >
@@ -163,5 +167,5 @@ export default function Header() {
         )}
       </div>
     </header>
-  )
+  );
 }

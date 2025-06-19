@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { 
-  Table, 
-  Card, 
-  Rate, 
-  message, 
-  Spin, 
-  Button, 
-  Input, 
-  Select, 
-  DatePicker, 
+import {
+  Table,
+  Card,
+  Rate,
+  message,
+  Spin,
+  Button,
+  Input,
+  Select,
+  DatePicker,
   Space,
   Tag,
   Avatar,
   Modal,
   Tooltip
 } from "antd";
-import { 
-  MessageCircle, 
-  User, 
-  Calendar, 
-  Search, 
+import {
+  MessageCircle,
+  User,
+  Calendar,
+  Search,
   Filter,
   Eye,
   Trash2,
@@ -35,17 +35,17 @@ const { RangePicker } = DatePicker;
 // API function để lấy tất cả feedback
 const getAllFeedbacks = async () => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
-  
+
   // Lấy token từ localStorage
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('accessToken');
-  
+
   if (!token) {
     throw new Error("Bạn cần đăng nhập để xem danh sách feedback.");
   }
 
   try {
     const url = `${API_BASE_URL}/api/Feedback/GetAllFeedbacks`;
-    
+
     console.log("Fetching all feedbacks from:", url);
 
     const response = await fetch(url, {
@@ -82,13 +82,13 @@ const getAllFeedbacks = async () => {
 // API function để lấy thông tin sản phẩm theo ID
 const getProductById = async (productId: string) => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
-  
+
   // Lấy token từ localStorage
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('accessToken');
-  
+
   try {
     const url = `${API_BASE_URL}/api/Product/GetProductById/${encodeURIComponent(productId)}`;
-    
+
     console.log("Fetching product info from:", url);
 
     const headers: Record<string, string> = {
@@ -193,7 +193,7 @@ export default function FeedbackAdmin() {
     try {
       setLoading(true);
       const data = await getAllFeedbacks();
-      
+
       // Set feedback data trước, sau đó sẽ enrich với product info
       setFeedbacks(data || []);
     } catch (error) {
@@ -210,7 +210,7 @@ export default function FeedbackAdmin() {
 
     // Filter theo search text
     if (searchText) {
-      filtered = filtered.filter(feedback => 
+      filtered = filtered.filter(feedback =>
         feedback.comment?.toLowerCase().includes(searchText.toLowerCase()) ||
         feedback.userName?.toLowerCase().includes(searchText.toLowerCase()) ||
         feedback.productName?.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -229,8 +229,8 @@ export default function FeedbackAdmin() {
       const [startDate, endDate] = dateRange;
       filtered = filtered.filter(feedback => {
         const feedbackDate = dayjs(feedback.createdAt);
-        return feedbackDate.isAfter(startDate.startOf('day')) && 
-               feedbackDate.isBefore(endDate.endOf('day'));
+        return feedbackDate.isAfter(startDate.startOf('day')) &&
+          feedbackDate.isBefore(endDate.endOf('day'));
       });
     }
 
@@ -360,7 +360,7 @@ export default function FeedbackAdmin() {
             onClick={() => showFeedbackDetail(record)}
             className="text-blue-600 hover:bg-blue-50"
           />
-          <Button
+          {/* <Button
             type="text"
             icon={<Trash2 className="w-4 h-4" />}
             className="text-red-600 hover:bg-red-50"
@@ -376,7 +376,7 @@ export default function FeedbackAdmin() {
                 },
               });
             }}
-          />
+          /> */}
         </Space>
       ),
     },
@@ -424,7 +424,7 @@ export default function FeedbackAdmin() {
                 allowClear
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Filter className="w-4 h-4 inline mr-1" />
@@ -506,7 +506,7 @@ export default function FeedbackAdmin() {
               pageSize: 10,
               showSizeChanger: true,
               showQuickJumper: true,
-              showTotal: (total, range) => 
+              showTotal: (total, range) =>
                 `${range[0]}-${range[1]} của ${total} feedback`,
             }}
             scroll={{ x: 1000 }}
@@ -543,7 +543,7 @@ export default function FeedbackAdmin() {
                   <p className="text-sm text-gray-500">Product ID: {selectedFeedback.productId}</p>
                 </div>
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium text-gray-500">Đánh giá</label>
                 <div className="mt-1 flex items-center gap-2">

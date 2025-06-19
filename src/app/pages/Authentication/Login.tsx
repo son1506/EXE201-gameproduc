@@ -20,14 +20,15 @@ const Login: React.FC = () => {
       const result = await loginAccount(email, password);
 
       if (result.success) {
-        // Lưu token vào localStorage
+        // Lưu token và thông tin vào localStorage
         localStorage.setItem("token", result.result); // result.result chứa JWT token
         localStorage.setItem("authToken", result.result); // Backup với key khác
         localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("accountEmail", email); // Lưu email để hiển thị ở header
+        localStorage.setItem("accountName", email); // Lưu email làm accountName để đồng bộ với Header
         
         message.success("Đăng nhập thành công!");
-        navigate("/");
+        // Đảm bảo localStorage được cập nhật trước khi navigate
+        setTimeout(() => navigate("/"), 0); // Delay nhỏ để đảm bảo state được cập nhật
       } else {
         message.error("Đăng nhập thất bại. Vui lòng thử lại.");
       }
@@ -52,7 +53,6 @@ const Login: React.FC = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-pink-200 via-pink-100 to-white">
       <div className="bg-white rounded-lg shadow-lg p-10 w-full max-w-md relative">
-        
         {/* Nút quay lại */}
         <button
           onClick={handleGoBack}
