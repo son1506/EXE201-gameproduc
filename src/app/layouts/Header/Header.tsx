@@ -36,7 +36,7 @@ export default function Header() {
   ]
 
   return (
-    <header className="bg-gradient-to-r from-pink-50 to-rose-50 border-b-4 border-pink-200 shadow-lg fixed top-0 left-0 right-0 z-50 overflow-hidden">
+    <header className="bg-gradient-to-r from-pink-50 to-rose-50 border-b-4 border-pink-200 shadow-lg fixed top-0 left-0 right-0 z-20 overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-2 left-10 w-6 h-6 bg-pink-300 rounded-full"></div>

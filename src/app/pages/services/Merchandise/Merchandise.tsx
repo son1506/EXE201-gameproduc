@@ -17,11 +17,11 @@ export default function Merchandise() {
 
     useEffect(() => {
         let isMounted = true
-        
+
         const getCategoryFromId = (categoryId) => {
             const categoryMap = {
                 'collectibles': 'Collection',
-                'keyring': 'Keyring', 
+                'keyring': 'Keyring',
                 'keychain': 'Keyring',
                 'pin': 'Pin',
                 'pins': 'Pin',
@@ -57,25 +57,25 @@ export default function Merchandise() {
         const fetchProducts = async () => {
             try {
                 if (!isMounted) return
-                
+
                 setLoading(true)
                 const apiProducts = await getAllProducts()
-                
+
                 if (!isMounted) return
-                
+
                 if (!Array.isArray(apiProducts)) {
                     throw new Error('API response is not an array')
                 }
-                
+
                 // Transform products
                 const transformedProducts = apiProducts
                     .filter(product => {
-                        return product && 
-                               product.productId && 
-                               product.productName && 
-                               typeof product.productPrice === 'number' &&
-                               product.isActive && 
-                               product.productQuantity > 0
+                        return product &&
+                            product.productId &&
+                            product.productName &&
+                            typeof product.productPrice === 'number' &&
+                            product.isActive &&
+                            product.productQuantity > 0
                     })
                     .map((product) => ({
                         id: product.productId,
@@ -96,7 +96,7 @@ export default function Merchandise() {
                     setProducts(transformedProducts)
                     message.success(`Đã tải ${transformedProducts.length} sản phẩm`)
                 }
-                
+
             } catch (error) {
                 console.error('Error loading products:', error)
                 if (isMounted) {
@@ -111,14 +111,14 @@ export default function Merchandise() {
         }
 
         fetchProducts()
-        
+
         return () => {
             isMounted = false
         }
     }, [])
 
-    const filteredProducts = activeTab === "New" 
-        ? products.filter((p) => p.isNew) 
+    const filteredProducts = activeTab === "New"
+        ? products.filter((p) => p.isNew)
         : products.filter((p) => p.category === activeTab)
 
     const toggleFavorite = (id) => {
@@ -137,9 +137,9 @@ export default function Merchandise() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 font-pixel">
+        <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 font-pixel pt-20 ">
             {/* Header */}
-            <section className="relative bg-gradient-to-r from-pink-200 via-rose-200 to-pink-300 py-16 px-4 overflow-hidden">
+            <section className="relative bg-gradient-to-r from-pink-200 via-rose-200 to-pink-300 py-16 px-4 overflow-hidden ">
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-10 left-10 w-20 h-20 bg-white rounded-full animate-pulse"></div>
                     <div className="absolute top-20 right-20 w-16 h-16 bg-white rounded-full animate-pulse" style={{ animationDelay: "1s" }}></div>
@@ -174,11 +174,10 @@ export default function Merchandise() {
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-6 py-3 rounded-full font-pixel text-sm font-bold transition-all duration-200 transform hover:scale-105 ${
-                                    activeTab === tab
-                                        ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg"
-                                        : "bg-white text-pink-600 border-2 border-pink-300 hover:border-pink-400 shadow-md"
-                                }`}
+                                className={`px-6 py-3 rounded-full font-pixel text-sm font-bold transition-all duration-200 transform hover:scale-105 ${activeTab === tab
+                                    ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg"
+                                    : "bg-white text-pink-600 border-2 border-pink-300 hover:border-pink-400 shadow-md"
+                                    }`}
                             >
                                 {tab === "New" && "🆕 "}
                                 {tab === "Keyring" && "🔑 "}
@@ -212,20 +211,19 @@ export default function Merchandise() {
                                                 <Badge count="NEW" style={{ backgroundColor: "#ef4444", color: "white", fontFamily: "inherit", fontWeight: "bold" }} />
                                             </div>
                                         )}
-                                        
+
                                         <button
                                             onClick={() => toggleFavorite(product.id)}
                                             className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
                                         >
                                             <Heart
-                                                className={`w-5 h-5 ${
-                                                    favorites.includes(product.id)
-                                                        ? "text-red-500 fill-red-500"
-                                                        : "text-gray-400 hover:text-red-400"
-                                                }`}
+                                                className={`w-5 h-5 ${favorites.includes(product.id)
+                                                    ? "text-red-500 fill-red-500"
+                                                    : "text-gray-400 hover:text-red-400"
+                                                    }`}
                                             />
                                         </button>
-                                        
+
                                         <img
                                             src={product.image}
                                             alt={product.name}

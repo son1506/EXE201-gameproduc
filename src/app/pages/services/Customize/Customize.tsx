@@ -244,7 +244,7 @@ export default function Customize() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 font-pixel">
+        <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 font-pixel pt-20">
             {/* Header */}
             <section className="bg-gradient-to-r from-pink-200 via-rose-200 to-pink-300 py-16 px-4">
                 <div className="max-w-6xl mx-auto text-center">

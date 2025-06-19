@@ -73,7 +73,7 @@ export default function Gameplay() {
     ]
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 font-pixel">
+        <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 font-pixel pt-20">
             {/* Hero Section */}
             <section className="relative bg-gradient-to-br from-pink-200 via-rose-200 to-pink-300 py-20 px-4 overflow-hidden">
                 {/* Floating decorative elements */}
