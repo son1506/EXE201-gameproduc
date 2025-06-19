@@ -93,12 +93,12 @@ const PaymentDashboard: React.FC = () => {
       key: "amount",
       render: moneyRender,
     },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: statusTag,
-    },
+    // {
+    //   title: "Status",
+    //   dataIndex: "status",
+    //   key: "status",
+    //   render: statusTag,
+    // },
     {
       title: "Description",
       dataIndex: "description",
@@ -111,16 +111,16 @@ const PaymentDashboard: React.FC = () => {
       key: "createdAt",
       render: (d) => new Date(d).toLocaleString(),
     },
-    {
-      title: "Checkout URL",
-      dataIndex: "checkoutUrl",
-      key: "checkoutUrl",
-      render: (url: string) => (
-        <a href={url} target="_blank" rel="noreferrer">
-          Mở&nbsp;link
-        </a>
-      ),
-    },
+    // {
+    //   title: "CheckoutURL",
+    //   dataIndex: "checkoutUrl",
+    //   key: "checkoutUrl",
+    //   render: (url: string) => (
+    //     <a href={url} target="_blank" rel="noreferrer">
+    //       Mở&nbsp;link
+    //     </a>
+    //   ),
+    // },
   ];
 
   const txCols: ColumnsType<Transaction> = [
@@ -194,7 +194,7 @@ const PaymentDashboard: React.FC = () => {
           </Card>
         </TabPane>
 
-        <TabPane
+        {/* <TabPane
           tab={
             <span>
               <SwapOutlined /> Giao dịch
@@ -215,7 +215,7 @@ const PaymentDashboard: React.FC = () => {
               />
             )}
           </Card>
-        </TabPane>
+        </TabPane> */}
       </Tabs>
     </div>
   );
