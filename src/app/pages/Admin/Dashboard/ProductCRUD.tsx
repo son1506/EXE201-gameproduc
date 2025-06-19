@@ -264,7 +264,7 @@ const ProductCRUD: React.FC = () => {
         <div className="mb-6 flex justify-between items-center">
           <h2 className="text-2xl font-semibold text-gray-700">Products List</h2>
           <div className="flex gap-3">
-            <button
+            {/* <button
               onClick={handleTestFirebase}
               disabled={testingFirebase}
               className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -279,7 +279,7 @@ const ProductCRUD: React.FC = () => {
                   🔥 Test Firebase
                 </>
               )}
-            </button>
+            </button> */}
             <button
               onClick={() => {
                 resetForm();
