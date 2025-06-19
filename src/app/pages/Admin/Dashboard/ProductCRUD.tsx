@@ -1,8 +1,12 @@
+// src/app/pages/Admin/Dashboard/ProductCRUD.tsx
 import React, { useState, useEffect } from 'react';
 import { PlusCircle, Edit2, Trash2, X, Save, Package } from 'lucide-react';
-import { message } from 'antd';
+import { message, Select } from 'antd';
+import ImageUpload from '../../../components/ImageUpload/ImageUpload';
+import { runFirebaseTest } from '../../../Utils/testFirebase';
 
 const API_BASE_URL = 'https://localhost:7188/api/Product';
+const { Option } = Select;
 
 // Define Product interface
 interface Product {
@@ -27,11 +31,21 @@ interface FormData {
   productQuantity: string;
 }
 
+// Category options
+const categoryOptions = [
+  { value: 'apparel', label: '👕 Apparel (Quần áo)', color: '#f472b6' },
+  { value: 'accessories', label: '👑 Accessories (Phụ kiện)', color: '#8b5cf6' },
+  { value: 'collectibles', label: '🎁 Collectibles (Đồ sưu tập)', color: '#06b6d4' },
+  { value: 'keyring', label: '🔑 Keyring (Móc khóa)', color: '#10b981' },
+  { value: 'pin', label: '📌 Pin (Huy hiệu)', color: '#f59e0b' },
+];
+
 const ProductCRUD: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [testingFirebase, setTestingFirebase] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
     productName: '',
     productDescription: '',
@@ -60,6 +74,11 @@ const ProductCRUD: React.FC = () => {
 
   // Create product
   const createProduct = async (): Promise<void> => {
+    if (!formData.productImageUrl) {
+      message.error('Please upload a product image');
+      return;
+    }
+
     try {
       const response = await fetch(`${API_BASE_URL}/CreateProduct`, {
         method: 'POST',
@@ -88,6 +107,11 @@ const ProductCRUD: React.FC = () => {
   // Update product
   const updateProduct = async (): Promise<void> => {
     if (!editingProduct) return;
+    
+    if (!formData.productImageUrl) {
+      message.error('Please upload a product image');
+      return;
+    }
     
     try {
       const response = await fetch(`${API_BASE_URL}/UpdateProduct/${editingProduct.productId}`, {
@@ -180,10 +204,47 @@ const ProductCRUD: React.FC = () => {
     }));
   };
 
+  // Handle category change
+  const handleCategoryChange = (value: string): void => {
+    setFormData(prev => ({
+      ...prev,
+      categoryId: value
+    }));
+  };
+
+  // Handle image upload
+  const handleImageUpload = (url: string | string[]): void => {
+    const imageUrl = Array.isArray(url) ? url[0] || '' : url;
+    setFormData(prev => ({
+      ...prev,
+      productImageUrl: imageUrl
+    }));
+  };
+
+  // Handle Firebase test
+  const handleTestFirebase = async (): Promise<void> => {
+    setTestingFirebase(true);
+    try {
+      await runFirebaseTest();
+    } catch (error) {
+      console.error('Firebase test failed:', error);
+    } finally {
+      setTestingFirebase(false);
+    }
+  };
+
   // Handle image error
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>): void => {
     const target = e.target as HTMLImageElement;
     target.style.display = 'none';
+  };
+
+  // Get category display info
+  const getCategoryInfo = (categoryId: string) => {
+    return categoryOptions.find(cat => cat.value === categoryId) || { 
+      label: categoryId, 
+      color: '#6b7280' 
+    };
   };
 
   useEffect(() => {
@@ -202,21 +263,39 @@ const ProductCRUD: React.FC = () => {
 
         <div className="mb-6 flex justify-between items-center">
           <h2 className="text-2xl font-semibold text-gray-700">Products List</h2>
-          <button
-            onClick={() => {
-              resetForm();
-              setShowForm(true);
-            }}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
-          >
-            <PlusCircle className="w-5 h-5" />
-            Add New Product
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleTestFirebase}
+              disabled={testingFirebase}
+              className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {testingFirebase ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Testing...
+                </>
+              ) : (
+                <>
+                  🔥 Test Firebase
+                </>
+              )}
+            </button>
+            <button
+              onClick={() => {
+                resetForm();
+                setShowForm(true);
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
+            >
+              <PlusCircle className="w-5 h-5" />
+              Add New Product
+            </button>
+          </div>
         </div>
 
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-xl font-semibold text-gray-800">
@@ -233,94 +312,118 @@ const ProductCRUD: React.FC = () => {
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Product Name
-                    </label>
-                    <input
-                      type="text"
-                      name="productName"
-                      value={formData.productName}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Left Column - Form Fields */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Product Name *
+                        </label>
+                        <input
+                          type="text"
+                          name="productName"
+                          value={formData.productName}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description
-                    </label>
-                    <textarea
-                      name="productDescription"
-                      value={formData.productDescription}
-                      onChange={handleInputChange}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Description
+                        </label>
+                        <textarea
+                          name="productDescription"
+                          value={formData.productDescription}
+                          onChange={handleInputChange}
+                          rows={3}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Price
-                      </label>
-                      <input
-                        type="number"
-                        name="productPrice"
-                        value={formData.productPrice}
-                        onChange={handleInputChange}
-                        step="0.01"
-                        min="0"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                      />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Price *
+                          </label>
+                          <input
+                            type="number"
+                            name="productPrice"
+                            value={formData.productPrice}
+                            onChange={handleInputChange}
+                            step="0.01"
+                            min="0"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Quantity *
+                          </label>
+                          <input
+                            type="number"
+                            name="productQuantity"
+                            value={formData.productQuantity}
+                            onChange={handleInputChange}
+                            min="0"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Category *
+                        </label>
+                        <Select
+                          value={formData.categoryId}
+                          onChange={handleCategoryChange}
+                          className="w-full"
+                          size="large"
+                          placeholder="Select a category"
+                        >
+                          {categoryOptions.map(option => (
+                            <Option key={option.value} value={option.value}>
+                              <div className="flex items-center gap-2">
+                                <div 
+                                  className="w-3 h-3 rounded-full" 
+                                  style={{ backgroundColor: option.color }}
+                                />
+                                {option.label}
+                              </div>
+                            </Option>
+                          ))}
+                        </Select>
+                      </div>
                     </div>
 
+                    {/* Right Column - Image Upload */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Quantity
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Product Image *
                       </label>
-                      <input
-                        type="number"
-                        name="productQuantity"
-                        value={formData.productQuantity}
-                        onChange={handleInputChange}
-                        min="0"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
+                      <ImageUpload
+                        value={formData.productImageUrl}
+                        onChange={handleImageUpload}
+                        folder="products"
+                        maxCount={1}
+                        compress={true}
+                        quality={0.8}
                       />
+                      {formData.productImageUrl && (
+                        <div className="mt-2 text-sm text-green-600">
+                          ✅ Image uploaded successfully
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Category ID
-                    </label>
-                    <input
-                      type="text"
-                      name="categoryId"
-                      value={formData.categoryId}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Image URL
-                    </label>
-                    <input
-                      type="url"
-                      name="productImageUrl"
-                      value={formData.productImageUrl}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div className="flex justify-end gap-3 pt-4">
+                  <div className="flex justify-end gap-3 pt-4 border-t">
                     <button
                       type="button"
                       onClick={() => {
@@ -366,7 +469,7 @@ const ProductCRUD: React.FC = () => {
                       Product
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Description
+                      Category
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Price
@@ -375,7 +478,7 @@ const ProductCRUD: React.FC = () => {
                       Quantity
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Category
+                      Status
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
@@ -383,64 +486,77 @@ const ProductCRUD: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {products.map((product) => (
-                    <tr key={product.productId} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          {product.productImageUrl && (
-                            <img
-                              src={product.productImageUrl}
-                              alt={product.productName}
-                              className="w-10 h-10 rounded-full mr-3 object-cover"
-                              onError={handleImageError}
-                            />
-                          )}
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {product.productName}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              ID: {product.productId}
+                  {products.map((product) => {
+                    const categoryInfo = getCategoryInfo(product.categoryId);
+                    return (
+                      <tr key={product.productId} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            {product.productImageUrl && (
+                              <img
+                                src={product.productImageUrl}
+                                alt={product.productName}
+                                className="w-12 h-12 rounded-lg mr-4 object-cover border border-gray-200"
+                                onError={handleImageError}
+                              />
+                            )}
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {product.productName}
+                              </div>
+                              <div className="text-sm text-gray-500 max-w-xs truncate">
+                                {product.productDescription || '-'}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 max-w-xs truncate">
-                          {product.productDescription || '-'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          ${product.productPrice?.toFixed(2) || '0.00'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {product.productQuantity || 0}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {product.categoryId || '-'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button
-                          onClick={() => startEdit(product)}
-                          className="text-blue-600 hover:text-blue-900 mr-3"
-                        >
-                          <Edit2 className="w-4 h-4 inline" />
-                        </button>
-                        <button
-                          onClick={() => deleteProduct(product.productId)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <Trash2 className="w-4 h-4 inline" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="w-3 h-3 rounded-full" 
+                              style={{ backgroundColor: categoryInfo.color }}
+                            />
+                            <span className="text-sm text-gray-900">
+                              {categoryInfo.label.split(' ')[1] || categoryInfo.label}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            ${product.productPrice?.toFixed(2) || '0.00'}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {product.productQuantity || 0}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            product.isActive 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {product.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <button
+                            onClick={() => startEdit(product)}
+                            className="text-blue-600 hover:text-blue-900 mr-3"
+                          >
+                            <Edit2 className="w-4 h-4 inline" />
+                          </button>
+                          <button
+                            onClick={() => deleteProduct(product.productId)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            <Trash2 className="w-4 h-4 inline" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

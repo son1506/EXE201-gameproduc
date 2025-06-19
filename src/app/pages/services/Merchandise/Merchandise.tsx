@@ -41,10 +41,13 @@ export default function Merchandise() {
             }
         }
 
+        // 🔥 FIXED: Updated function to handle Firebase URLs properly
         const getProductImageUrl = (productImageUrl) => {
             if (productImageUrl && typeof productImageUrl === 'string' && productImageUrl.trim()) {
-                // Return the URL as-is if it starts with http
-                if (productImageUrl.startsWith('http')) {
+                // Check if it's a Firebase Storage URL
+                if (productImageUrl.includes('firebase') || 
+                    productImageUrl.includes('firebasestorage') ||
+                    productImageUrl.startsWith('http')) {
                     return productImageUrl
                 }
                 // Handle relative paths
@@ -59,38 +62,55 @@ export default function Merchandise() {
                 if (!isMounted) return
 
                 setLoading(true)
+                console.log('🔄 Fetching products from API...')
+                
+                // 🔥 FIXED: Better error handling for API call
                 const apiProducts = await getAllProducts()
+                console.log('📦 API Response:', apiProducts)
 
                 if (!isMounted) return
 
                 if (!Array.isArray(apiProducts)) {
+                    console.warn('⚠️ API response is not an array:', typeof apiProducts)
                     throw new Error('API response is not an array')
                 }
 
                 // Transform products
                 const transformedProducts = apiProducts
                     .filter(product => {
-                        return product &&
+                        const isValid = product &&
                             product.productId &&
                             product.productName &&
                             typeof product.productPrice === 'number' &&
                             product.isActive &&
                             product.productQuantity > 0
+                        
+                        if (!isValid) {
+                            console.log('❌ Filtered out invalid product:', product)
+                        }
+                        return isValid
                     })
-                    .map((product) => ({
-                        id: product.productId,
-                        name: product.productName,
-                        price: `${product.productPrice?.toLocaleString()} VND`,
-                        originalPrice: `${(product.productPrice * 1.25)?.toLocaleString()} VND`,
-                        image: getProductImageUrl(product.productImageUrl),
-                        category: getCategoryFromId(product.categoryId),
-                        isNew: isNewProduct(product.createdAt),
-                        rating: (4.5 + Math.random() * 0.5).toFixed(1),
-                        reviews: Math.floor(Math.random() * 200) + 50,
-                        quantity: product.productQuantity,
-                        description: product.productDescription || 'Sản phẩm chính hãng Sweeties Dodging',
-                        isActive: product.isActive
-                    }))
+                    .map((product) => {
+                        const imageUrl = getProductImageUrl(product.productImageUrl)
+                        console.log(`🖼️ Product "${product.productName}" image URL:`, imageUrl)
+                        
+                        return {
+                            id: product.productId,
+                            name: product.productName,
+                            price: `${product.productPrice?.toLocaleString()} VND`,
+                            originalPrice: `${(product.productPrice * 1.25)?.toLocaleString()} VND`,
+                            image: imageUrl,
+                            category: getCategoryFromId(product.categoryId),
+                            isNew: isNewProduct(product.createdAt),
+                            rating: (4.5 + Math.random() * 0.5).toFixed(1),
+                            reviews: Math.floor(Math.random() * 200) + 50,
+                            quantity: product.productQuantity,
+                            description: product.productDescription || 'Sản phẩm chính hãng Sweeties Dodging',
+                            isActive: product.isActive
+                        }
+                    })
+
+                console.log(`✅ Transformed ${transformedProducts.length} products`)
 
                 if (isMounted) {
                     setProducts(transformedProducts)
@@ -98,9 +118,16 @@ export default function Merchandise() {
                 }
 
             } catch (error) {
-                console.error('Error loading products:', error)
+                console.error('❌ Error loading products:', error)
                 if (isMounted) {
-                    message.error('Không thể tải danh sách sản phẩm')
+                    // 🔥 FIXED: More specific error message
+                    if (error.message?.includes('fetch')) {
+                        message.error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.')
+                    } else if (error.message?.includes('not an array')) {
+                        message.error('Dữ liệu từ server không đúng định dạng.')
+                    } else {
+                        message.error('Không thể tải danh sách sản phẩm. Vui lòng thử lại sau.')
+                    }
                     setProducts([])
                 }
             } finally {
@@ -123,6 +150,13 @@ export default function Merchandise() {
 
     const toggleFavorite = (id) => {
         setFavorites((prev) => (prev.includes(id) ? prev.filter((fav) => fav !== id) : [...prev, id]))
+    }
+
+    // 🔥 FIXED: Better image error handling
+    const handleImageError = (e) => {
+        const target = e.target as HTMLImageElement
+        console.log('❌ Image failed to load:', target.src)
+        target.src = "https://via.placeholder.com/400x300/ffc0cb/ffffff?text=Image+Not+Found"
     }
 
     if (loading) {
@@ -167,7 +201,7 @@ export default function Merchandise() {
             </section>
 
             {/* Tabs */}
-            <section className="bg-white/80 backdrop-blur-sm border-b border-pink-200  top-0 z-40">
+            <section className="bg-white/80 backdrop-blur-sm border-b border-pink-200 top-0 z-40">
                 <div className="max-w-6xl mx-auto px-4 py-6">
                     <div className="flex flex-wrap justify-center gap-2">
                         {tabs.map((tab) => (
@@ -224,15 +258,14 @@ export default function Merchandise() {
                                             />
                                         </button>
 
+                                        {/* 🔥 FIXED: Better image handling with error handling */}
                                         <img
                                             src={product.image}
                                             alt={product.name}
                                             className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
-                                            onError={(e) => {
-                                                const target = e.target as HTMLImageElement
-                                                target.src = "https://via.placeholder.com/400x300/ffc0cb/ffffff?text=Image+Not+Found"
-                                            }}
+                                            onError={handleImageError}
                                             loading="lazy"
+                                            onLoad={() => console.log('✅ Image loaded successfully:', product.image)}
                                         />
                                     </div>
 
