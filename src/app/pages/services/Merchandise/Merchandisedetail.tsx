@@ -11,13 +11,13 @@ const { TextArea } = Input;
 // API function for getting feedback by product ID
 const getFeedbackByProductId = async (productId: string) => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
-  
+
   // Lấy token từ localStorage
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('accessToken');
-  
+
   try {
     const url = `${API_BASE_URL}/api/Feedback/GetFeedbackByProductId/${encodeURIComponent(productId)}`;
-    
+
     console.log("Fetching feedback from:", url);
 
     const headers: Record<string, string> = {
@@ -62,10 +62,10 @@ const getFeedbackByProductId = async (productId: string) => {
 // API function for submitting feedback
 const submitFeedback = async (productId: string, comment: string, rating: number) => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
-  
+
   // Lấy token từ localStorage
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('accessToken');
-  
+
   if (!token) {
     throw new Error("Bạn cần đăng nhập để gửi đánh giá.");
   }
@@ -73,7 +73,7 @@ const submitFeedback = async (productId: string, comment: string, rating: number
   try {
     // Format theo API documentation - có thể cần query parameter thay vì body
     const url = `${API_BASE_URL}/api/Feedback/SubmitFeedback?productId=${encodeURIComponent(productId)}`;
-    
+
     const requestBody = {
       comment: comment,
       rating: rating,
@@ -98,7 +98,7 @@ const submitFeedback = async (productId: string, comment: string, rating: number
     if (!response.ok) {
       const errorText = await response.text();
       console.log("Error response:", errorText);
-      
+
       if (response.status === 401) {
         throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
       }
@@ -176,7 +176,7 @@ export default function MerchandiseDetail() {
   useEffect(() => {
     const fetchProduct = async () => {
       if (!productId) return;
-      
+
       try {
         setLoading(true);
         const data = await getProductById(productId);
@@ -221,7 +221,7 @@ export default function MerchandiseDetail() {
         console.log("No productId found in URL params");
         return;
       }
-      
+
       try {
         setLoadingFeedback(true);
         console.log("Fetching feedbacks for productId:", productId);
@@ -244,24 +244,24 @@ export default function MerchandiseDetail() {
 
   const handleSubmitFeedback = async (values: { comment: string; rating: number }) => {
     if (!productId) return;
-    
+
     try {
       setSubmittingFeedback(true);
       await submitFeedback(productId, values.comment, values.rating);
-      
+
       message.success("Cảm ơn bạn đã đánh giá sản phẩm!");
       form.resetFields();
       setIsModalVisible(false);
-      
+
       // Reload feedback sau khi submit thành công với productId từ URL params
       if (productId) {
         const updatedFeedbacks = await getFeedbackByProductId(productId);
         setFeedbacks(updatedFeedbacks || []);
       }
-      
+
     } catch (error) {
       const errorMessage = (error as Error).message;
-      
+
       // Xử lý lỗi authentication đặc biệt
       if (errorMessage.includes("đăng nhập")) {
         message.error(errorMessage);
@@ -278,14 +278,14 @@ export default function MerchandiseDetail() {
   const showFeedbackModal = () => {
     // Kiểm tra xem user đã đăng nhập chưa
     const token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('accessToken');
-    
+
     if (!token) {
       message.warning("Bạn cần đăng nhập để gửi đánh giá sản phẩm.");
       // Có thể redirect đến trang login
       // navigate('/login');
       return;
     }
-    
+
     setIsModalVisible(true);
   };
 
@@ -367,7 +367,7 @@ export default function MerchandiseDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 p-6 font-pixel">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 p-6 font-pixel mt-20">
       <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl border border-pink-100 p-8">
         {/* Nút Back */}
         <Button
@@ -390,7 +390,7 @@ export default function MerchandiseDetail() {
             console.error(`❌ Product detail image failed: ${product.name}`);
             console.error(`❌ Failed URL: ${product.image}`);
             console.error(`❌ Original API URL: ${product._debug?.originalImageUrl}`);
-            
+
             // Fallback to your existing tshirt image
             const target = e.target as HTMLImageElement;
             target.src = tshirt;
@@ -480,8 +480,8 @@ export default function MerchandiseDetail() {
                   className="shadow-sm border border-pink-100 hover:shadow-md transition-shadow duration-200"
                 >
                   <div className="flex items-start gap-3">
-                    <Avatar 
-                      icon={<User />} 
+                    <Avatar
+                      icon={<User />}
                       className="bg-pink-100 text-pink-600 flex-shrink-0"
                     />
                     <div className="flex-1">
@@ -491,9 +491,9 @@ export default function MerchandiseDetail() {
                             {feedback.userName || "Khách hàng"}
                           </p>
                           <div className="flex items-center gap-2">
-                            <Rate 
-                              disabled 
-                              value={feedback.rating} 
+                            <Rate
+                              disabled
+                              value={feedback.rating}
                               className="text-sm"
                             />
                             <span className="text-xs text-gray-500">
