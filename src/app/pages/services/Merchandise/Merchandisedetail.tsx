@@ -131,6 +131,10 @@ interface Product {
   reviews: number;
   category: string;
   createdAt: string;
+  _debug?: {
+    originalImageUrl?: string;
+    finalImageUrl?: string;
+  };
 }
 
 interface Feedback {
@@ -154,6 +158,20 @@ export default function MerchandiseDetail() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
+  // 🔧 FIX: Helper function to process image URL from API
+  const getProductImageUrl = (productImageUrl: string | undefined | null) => {
+    if (productImageUrl && typeof productImageUrl === 'string' && productImageUrl.trim()) {
+      // If it's already a full URL (starts with http/https)
+      if (productImageUrl.startsWith('http')) {
+        return productImageUrl;
+      }
+      // Handle relative paths
+      return productImageUrl.startsWith('/') ? productImageUrl : `/${productImageUrl}`;
+    }
+    // Fallback to your existing tshirt image
+    return tshirt;
+  };
+
   // Lấy thông tin sản phẩm
   useEffect(() => {
     const fetchProduct = async () => {
@@ -168,7 +186,7 @@ export default function MerchandiseDetail() {
           name: data.productName,
           price: `$${data.productPrice}`,
           originalPrice: `$${(data.productPrice * 1.25).toFixed(2)}`,
-          image: "https://via.placeholder.com/400x300?text=Product+Image",
+          image: getProductImageUrl(data.productImageUrl), // 🔧 FIX: Use API image URL
           quantity: data.productQuantity,
           description: data.productDescription,
           isActive: data.isActive,
@@ -177,6 +195,11 @@ export default function MerchandiseDetail() {
           reviews: Math.floor(Math.random() * 200) + 50,
           category: getCategoryFromId(data.categoryId),
           createdAt: data.createdAt,
+          // 🔧 FIX: Keep debug info
+          _debug: {
+            originalImageUrl: data.productImageUrl,
+            finalImageUrl: getProductImageUrl(data.productImageUrl)
+          }
         };
 
         setProduct(transformed);
@@ -354,11 +377,24 @@ export default function MerchandiseDetail() {
           ← Quay lại
         </Button>
 
-        {/* Hình ảnh sản phẩm */}
+        {/* 🔧 FIX: Enhanced image with proper error handling */}
         <img
-          src={tshirt}
+          src={product.image}
           alt={product.name}
           className="w-full h-full object-cover rounded-2xl mb-6 border border-pink-100 shadow"
+          onLoad={() => {
+            console.log(`✅ Product detail image loaded: ${product.name}`);
+            console.log(`✅ Image URL: ${product.image}`);
+          }}
+          onError={(e) => {
+            console.error(`❌ Product detail image failed: ${product.name}`);
+            console.error(`❌ Failed URL: ${product.image}`);
+            console.error(`❌ Original API URL: ${product._debug?.originalImageUrl}`);
+            
+            // Fallback to your existing tshirt image
+            const target = e.target as HTMLImageElement;
+            target.src = tshirt;
+          }}
         />
 
         <div className="flex items-center justify-between mb-4">
