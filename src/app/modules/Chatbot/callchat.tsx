@@ -1,5 +1,5 @@
 import { message } from "antd";
-import getAllProducts from '../../modules/Products/getAllProducts'; // Adjust path as needed
+import getAllProducts from '../../modules/Products/getAllProducts';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -18,8 +18,9 @@ interface Product {
   categoryId: string;
 }
 
-const API_URL = "https://openrouter.ai/api/v1/chat/completions";
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+// Cấu hình Google Gemini API
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 // Cache để tránh gọi API liên tục
 let productsCache: Product[] | null = null;
@@ -118,70 +119,141 @@ Hiện tại gặp sự cố kỹ thuật, hãy xin lỗi khách hàng và yêu 
   }
 };
 
+// Tạo conversation history cho Gemini
+const buildConversationText = (messages: Message[], systemPrompt: string): string => {
+  let conversationText = `${systemPrompt}\n\n--- CUỘC TRÒ CHUYỆN ---\n\n`;
+  
+  messages.forEach((msg, index) => {
+    if (msg.role === 'user') {
+      conversationText += `Khách hàng: ${msg.content}\n\n`;
+    } else {
+      conversationText += `Sweeties AI: ${msg.content}\n\n`;
+    }
+  });
+  
+  conversationText += `Sweeties AI: `;
+  return conversationText;
+};
+
 export async function callchat(chatMessages: Message[]): Promise<string> {
   try {
     // Kiểm tra API key
-    if (!OPENROUTER_API_KEY) {
-      throw new Error("API key chưa được cấu hình. Kiểm tra file .env");
+    if (!GEMINI_API_KEY) {
+      throw new Error("Google Gemini API key chưa được cấu hình. Kiểm tra file .env");
     }
 
     if (!Array.isArray(chatMessages) || chatMessages.length === 0) {
       throw new Error("Không có tin nhắn nào để gửi.");
     }
 
-    console.log("🔍 Gửi request với messages:", chatMessages);
+    console.log("🔍 Gửi request tới Google Gemini với messages:", chatMessages);
 
     // Tạo system prompt với thông tin sản phẩm
     const systemPrompt = await createSystemPrompt();
+    
+    // Lấy tin nhắn cuối cùng của user
+    const lastUserMessage = chatMessages[chatMessages.length - 1];
+    
+    // Tạo prompt cho Gemini
+    const fullPrompt = buildConversationText(chatMessages, systemPrompt);
 
-    const response = await fetch(API_URL, {
+    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-        "X-Title": "Sweeties AI Chat",
-        "HTTP-Referer": window.location.origin,
       },
       body: JSON.stringify({
-        model: "openai/gpt-3.5-turbo",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...chatMessages,
-        ],
-        max_tokens: 1000,
-        temperature: 0.7,
+        contents: [{
+          parts: [{
+            text: fullPrompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1000,
+          stopSequences: ["Khách hàng:", "User:"]
+        },
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH", 
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          }
+        ]
       }),
     });
 
-    console.log("📡 Response status:", response.status);
+    console.log("📡 Gemini Response status:", response.status);
 
     const data = await response.json();
-    console.log("📝 Response data:", data);
+    console.log("📝 Gemini Response data:", data);
 
     if (!response.ok) {
-      console.error("❌ API Error:", data);
-      throw new Error(data.error?.message || `HTTP ${response.status}: ${data.message || "Lỗi không xác định"}`);
+      console.error("❌ Gemini API Error:", data);
+      throw new Error(data.error?.message || `Gemini API Error: ${response.status}`);
     }
 
-    if (!data.choices || !data.choices[0]?.message?.content) {
-      throw new Error("Không có phản hồi từ chatbot.");
+    // Xử lý response từ Gemini
+    const candidates = data.candidates;
+    if (!candidates || candidates.length === 0) {
+      throw new Error("Không có phản hồi từ Gemini.");
     }
 
-    return data.choices[0].message.content;
+    const candidate = candidates[0];
+    
+    // Kiểm tra nếu bị block bởi safety filter
+    if (candidate.finishReason === "SAFETY") {
+      return "Xin lỗi, tôi không thể trả lời câu hỏi này. Vui lòng hỏi về sản phẩm hoặc dịch vụ của chúng tôi! 😊";
+    }
+
+    const content = candidate.content?.parts?.[0]?.text;
+    if (!content) {
+      throw new Error("Không có nội dung phản hồi từ Gemini.");
+    }
+
+    // Làm sạch response (loại bỏ các phần không cần thiết)
+    let cleanResponse = content.trim();
+    
+    // Loại bỏ các phần prompt có thể bị lặp lại
+    cleanResponse = cleanResponse.replace(/^Sweeties AI:\s*/i, '');
+    cleanResponse = cleanResponse.replace(/Khách hàng:.*$/i, '');
+    
+    console.log("✅ Gemini Response:", cleanResponse);
+    return cleanResponse;
+
   } catch (err: unknown) {
-    console.error("🚨 Chatbot Error:", err);
+    console.error("🚨 Gemini Chatbot Error:", err);
 
     const errorMessage = err instanceof Error ? err.message : "Lỗi không xác định";
 
-    // Xử lý các lỗi phổ biến
-    if (errorMessage.includes("401")) {
-      message.error("API key không hợp lệ. Kiểm tra lại cấu hình.");
+    // Xử lý các lỗi phổ biến của Gemini API
+    if (errorMessage.includes("401") || errorMessage.includes("403")) {
+      message.error("🔑 Google Gemini API key không hợp lệ. Kiểm tra lại cấu hình.");
     } else if (errorMessage.includes("429")) {
-      message.error("Quá nhiều request. Vui lòng thử lại sau.");
-    } else if (errorMessage.includes("Network")) {
-      message.error("Lỗi kết nối mạng. Kiểm tra internet.");
+      message.error("🚫 Vượt quá giới hạn request Gemini. Vui lòng thử lại sau vài phút.");
+    } else if (errorMessage.includes("quota")) {
+      message.error("📈 Đã vượt quá quota Gemini. Chờ reset hoặc nâng cấp tài khoản.");
+    } else if (errorMessage.includes("SAFETY")) {
+      message.error("🛡️ Nội dung bị chặn bởi safety filter. Thử câu hỏi khác.");
+    } else if (errorMessage.includes("RECITATION")) {
+      message.error("📝 Gemini từ chối phản hồi do policy. Thử diễn đạt khác.");
+    } else if (errorMessage.includes("Network") || errorMessage.includes("fetch")) {
+      message.error("🌐 Lỗi kết nối mạng. Kiểm tra internet.");
     } else {
-      message.error(errorMessage || "Có lỗi xảy ra khi gọi chatbot.");
+      message.error(`❌ Lỗi Gemini: ${errorMessage}`);
     }
 
     throw err;
