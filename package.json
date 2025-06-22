@@ -35,6 +35,7 @@
     "react-router-dom": "^7.6.1",
     "react-toastify": "^11.0.5",
     "React-Vite-Typescript": "file:",
+    "recharts": "^2.15.4",
     "toast": "^0.5.4",
     "uuid": "^11.1.0",
     "zod": "^3.24.2",
