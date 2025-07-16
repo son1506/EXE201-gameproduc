@@ -17,13 +17,13 @@ export default async function verifyRegisterAccount(accountName, accountPassword
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || "Xác minh đăng ký thất bại.");
+            throw new Error(errorData.message || "Registration verification failed.");
         }
 
         const data = await response.json();
         return data;
     } catch (error) {
-        message.error(error.message || "Có lỗi xảy ra khi xác minh đăng ký.");
+        message.error(error.message || "An error occurred during registration verification.");
         throw error;
     }
 }

@@ -16,7 +16,7 @@ export default function ReturnPage() {
   });
 
   useEffect(() => {
-    // Đọc query parameters từ URL
+    // Read query parameters from URL
     const code = searchParams.get("code") || "";
     const id = searchParams.get("id") || "";
     const cancel = searchParams.get("cancel") === "true";
@@ -24,14 +24,14 @@ export default function ReturnPage() {
     const orderCode = searchParams.get("orderCode") || "";
     const pendingAmount = Number(localStorage.getItem("pendingAmount")) || 0;
 
-    // Ghi log để debug nếu cần
+    // Log for debugging if needed
     console.log("code:", code);
     console.log("status:", status);
     console.log("cancel:", cancel);
     console.log("orderCode:", orderCode);
     console.log("pendingAmount:", pendingAmount);
 
-    // Cập nhật transaction details
+    // Update transaction details
     setTransactionDetails({
       code,
       id,
@@ -41,29 +41,29 @@ export default function ReturnPage() {
       amount: pendingAmount,
     });
 
-    // Kiểm tra trạng thái giao dịch
+    // Check transaction status
     if (code === "00" && status === "PAID" && !cancel) {
-      setTransactionStatus("Thanh toán thành công!");
+      setTransactionStatus("Payment successful!");
 
-      // Cập nhật số dư vào localStorage (nếu cần dùng sau này)
+      // Update balance to localStorage (if needed for later use)
       const currentBalance = Number(localStorage.getItem("userBalance")) || 0;
       const newBalance = currentBalance + pendingAmount;
       localStorage.setItem("userBalance", newBalance.toString());
 
-      // Xóa dữ liệu tạm sau khi xử lý
+      // Clear temporary data after processing
       localStorage.removeItem("pendingAmount");
       localStorage.removeItem("pendingOrderCode");
 
-      message.success("Thanh toán thành công!");
+      message.success("Payment successful!");
     } else if (code === "00" && (status === "CANCELLED" || cancel)) {
-      setTransactionStatus("Giao dịch đã bị hủy.");
-      message.warning("Giao dịch đã bị hủy.");
+      setTransactionStatus("Transaction cancelled.");
+      message.warning("Transaction cancelled.");
     } else if (code === "01") {
-      setTransactionStatus("Giao dịch không hợp lệ do tham số không đúng.");
-      message.error("Giao dịch không hợp lệ.");
+      setTransactionStatus("Invalid transaction due to incorrect parameters.");
+      message.error("Invalid transaction.");
     } else {
-      setTransactionStatus("Giao dịch đang xử lý hoặc không xác định.");
-      message.info("Giao dịch đang xử lý.");
+      setTransactionStatus("Transaction processing or unknown status.");
+      message.info("Transaction processing.");
     }
   }, [searchParams]);
 
@@ -72,27 +72,27 @@ export default function ReturnPage() {
       <div className="w-full max-w-md p-6 bg-white shadow-lg rounded-lg text-center">
         <h1 className="text-3xl font-bold text-pink-500 mb-6">{transactionStatus}</h1>
 
-        {/* Hiển thị chi tiết giao dịch */}
-        <Card title="Chi Tiết Giao Dịch" bordered={false} className="mb-6">
+        {/* Display transaction details */}
+        <Card title="Transaction Details" bordered={false} className="mb-6">
           <Descriptions column={1}>
-            <Descriptions.Item label="Mã phản hồi (code)">{transactionDetails.code}</Descriptions.Item>
-            <Descriptions.Item label="ID giao dịch">{transactionDetails.id}</Descriptions.Item>
-            <Descriptions.Item label="Trạng thái hủy">{transactionDetails.cancel ? "Có" : "Không"}</Descriptions.Item>
-            <Descriptions.Item label="Trạng thái thanh toán">{transactionDetails.status}</Descriptions.Item>
-            <Descriptions.Item label="Mã đơn hàng">{transactionDetails.orderCode}</Descriptions.Item>
-            <Descriptions.Item label="Số tiền nạp">
+            <Descriptions.Item label="Response code">{transactionDetails.code}</Descriptions.Item>
+            <Descriptions.Item label="Transaction ID">{transactionDetails.id}</Descriptions.Item>
+            <Descriptions.Item label="Cancel status">{transactionDetails.cancel ? "Yes" : "No"}</Descriptions.Item>
+            <Descriptions.Item label="Payment status">{transactionDetails.status}</Descriptions.Item>
+            <Descriptions.Item label="Order code">{transactionDetails.orderCode}</Descriptions.Item>
+            <Descriptions.Item label="Top-up amount">
               {transactionDetails.amount.toLocaleString()} VND
             </Descriptions.Item>
           </Descriptions>
         </Card>
 
-        {/* Nút Quay Lại */}
+        {/* Back Button */}
         <Button
           type="primary"
           onClick={() => navigate("/payos-redirect")}
           className="w-full h-10 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-lg flex items-center justify-center"
         >
-          Quay Lại
+          Back
         </Button>
       </div>
     </div>

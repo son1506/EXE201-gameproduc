@@ -9,19 +9,19 @@ export async function registerAccount(accountEmail) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(accountEmail)  // Gửi trực tiếp chuỗi email
+      body: JSON.stringify(accountEmail)  // Send email string directly
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Đăng ký thất bại.");
+      throw new Error(errorData.message || "Registration failed.");
     }
 
     const data = await response.json();
-    message.success("Đăng ký thành công. Vui lòng kiểm tra email để xác thực.");
+    message.success("Registration successful. Please check your email for verification.");
     return data;
   } catch (error) {
-    message.error(error.message || "Có lỗi xảy ra khi đăng ký.");
+    message.error(error.message || "An error occurred during registration.");
     throw error;
   }
 }

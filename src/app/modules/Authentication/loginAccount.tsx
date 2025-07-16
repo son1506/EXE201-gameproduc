@@ -15,14 +15,14 @@ export default async function loginAccount(accountEmail, accountPassword) {
             })
         });
 
-        if (!response.ok) {
-            throw new Error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
-        }
+        // if (!response.ok) {
+        //     throw new Error("Login failed. Please check your credentials.");
+        // }
 
         const data = await response.json();
         return data;
     } catch (error) {
-        message.error(error.message || "Có lỗi xảy ra khi đăng nhập.");
+        message.error(error.message || "An error occurred during login.");
         throw error;
     }
 }

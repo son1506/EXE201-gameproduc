@@ -13,14 +13,14 @@ export default function SignUp() {
     e.preventDefault();
 
     if (!email.trim()) {
-      message.warning("Vui lòng nhập email.");
+      message.warning("Please enter email.");
       return;
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      message.error("Vui lòng nhập địa chỉ email hợp lệ.");
+      message.error("Please enter a valid email address.");
       return;
     }
 
@@ -28,10 +28,10 @@ export default function SignUp() {
       setLoading(true);
       await registerAccount(email);
       setIsEmailSent(true);
-      message.success("Email xác thực đã được gửi thành công!");
+      message.success("Verification email sent successfully!");
     } catch (error) {
-      console.error("Đăng ký lỗi:", error);
-      message.error("Có lỗi xảy ra khi gửi email xác thực.");
+      console.error("Registration error:", error);
+      message.error("Error occurred while sending verification email.");
     } finally {
       setLoading(false);
     }
@@ -47,7 +47,7 @@ export default function SignUp() {
     }
   };
 
-  // Success state - giống như ResetPassword
+  // Success state
   if (isEmailSent) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-pink-200 via-pink-100 to-white">
@@ -60,14 +60,14 @@ export default function SignUp() {
                 </svg>
               </div>
               <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                Email đã được gửi!
+                Email has been sent!
               </h1>
               <p className="text-gray-600 mb-6">
-                Chúng tôi đã gửi email xác thực đến địa chỉ email của bạn. 
-                Vui lòng kiểm tra hộp thư và nhấn vào liên kết trong email để xác thực tài khoản.
+                We have sent a verification email to your address. 
+                Please check your inbox and click the link in the email to verify your account.
               </p>
               <p className="text-sm text-gray-500 mb-8">
-                Không nhận được email? Hãy kiểm tra thư mục spam hoặc thử lại.
+                Didn't receive email? Check spam folder or try again.
               </p>
             </div>
             
@@ -79,14 +79,14 @@ export default function SignUp() {
                 }}
                 className="w-full py-3 bg-gray-100 text-gray-700 font-semibold rounded-md hover:bg-gray-200 transition"
               >
-                Gửi lại email
+                Resend email
               </button>
               
               <button
                 onClick={() => navigate("/login")}
                 className="w-full py-3 bg-gray-100 text-gray-700 font-semibold rounded-md hover:bg-gray-200 transition"
               >
-                Quay lại đăng nhập
+                Back to login
               </button>
             </div>
           </div>
@@ -95,11 +95,11 @@ export default function SignUp() {
     );
   }
 
-  // Form state - như cũ nhưng có loading state
+  // Form state
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md p-6 bg-white shadow-lg rounded-lg relative">
-        {/* Nút quay lại */}
+        {/* Back button */}
         <button
           onClick={handleGoBack}
           className="absolute left-4 top-4 text-pink-600 hover:text-pink-800 font-medium text-sm"
@@ -126,7 +126,7 @@ export default function SignUp() {
             loading={loading}
             className="w-full h-10 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-lg flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Đang gửi..." : "Send Verification Email"}
+            {loading ? "Sending..." : "Send Verification Email"}
           </Button>
         </form>
 

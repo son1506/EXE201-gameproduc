@@ -12,7 +12,7 @@ const { TextArea } = Input;
 const getFeedbackByProductId = async (productId: string) => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-  // Lấy token từ localStorage
+  // Get token from localStorage
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('accessToken');
 
   try {
@@ -25,7 +25,7 @@ const getFeedbackByProductId = async (productId: string) => {
       "Accept": "*/*"
     };
 
-    // Thêm Authorization header nếu có token
+    // Add Authorization header if token exists
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
@@ -44,7 +44,6 @@ const getFeedbackByProductId = async (productId: string) => {
       }
       if (response.status === 401) {
         console.log("Unauthorized - token may be invalid or expired");
-        // Có thể return [] hoặc throw error tùy theo yêu cầu
         return [];
       }
       throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -63,15 +62,14 @@ const getFeedbackByProductId = async (productId: string) => {
 const submitFeedback = async (productId: string, comment: string, rating: number) => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-  // Lấy token từ localStorage
+  // Get token from localStorage
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('accessToken');
 
   if (!token) {
-    throw new Error("Bạn cần đăng nhập để gửi đánh giá.");
+    throw new Error("You need to login to submit a review.");
   }
 
   try {
-    // Format theo API documentation - có thể cần query parameter thay vì body
     const url = `${API_BASE_URL}/api/Feedback/SubmitFeedback?productId=${encodeURIComponent(productId)}`;
 
     const requestBody = {
@@ -100,19 +98,19 @@ const submitFeedback = async (productId: string, comment: string, rating: number
       console.log("Error response:", errorText);
 
       if (response.status === 401) {
-        throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+        throw new Error("Session expired. Please login again.");
       }
       if (response.status === 400) {
-        throw new Error(`Dữ liệu không hợp lệ: ${errorText}`);
+        throw new Error(`Invalid data: ${errorText}`);
       }
-      throw new Error(`Lỗi ${response.status}: ${errorText}`);
+      throw new Error(`Error ${response.status}: ${errorText}`);
     }
 
     const result = await response.json();
     console.log("Success response:", result);
     return result;
   } catch (error) {
-    console.error("Lỗi khi gửi feedback:", error);
+    console.error("Error submitting feedback:", error);
     throw error;
   }
 };
@@ -158,7 +156,7 @@ export default function MerchandiseDetail() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
-  // 🔧 FIX: Helper function to process image URL from API
+  // Helper function to process image URL from API
   const getProductImageUrl = (productImageUrl: string | undefined | null) => {
     if (productImageUrl && typeof productImageUrl === 'string' && productImageUrl.trim()) {
       // If it's already a full URL (starts with http/https)
@@ -168,11 +166,11 @@ export default function MerchandiseDetail() {
       // Handle relative paths
       return productImageUrl.startsWith('/') ? productImageUrl : `/${productImageUrl}`;
     }
-    // Fallback to your existing tshirt image
+    // Fallback to existing tshirt image
     return tshirt;
   };
 
-  // Lấy thông tin sản phẩm
+  // Get product information
   useEffect(() => {
     const fetchProduct = async () => {
       if (!productId) return;
@@ -186,7 +184,7 @@ export default function MerchandiseDetail() {
           name: data.productName,
           price: `$${data.productPrice}`,
           originalPrice: `$${(data.productPrice * 1.25).toFixed(2)}`,
-          image: getProductImageUrl(data.productImageUrl), // 🔧 FIX: Use API image URL
+          image: getProductImageUrl(data.productImageUrl),
           quantity: data.productQuantity,
           description: data.productDescription,
           isActive: data.isActive,
@@ -195,7 +193,6 @@ export default function MerchandiseDetail() {
           reviews: Math.floor(Math.random() * 200) + 50,
           category: getCategoryFromId(data.categoryId),
           createdAt: data.createdAt,
-          // 🔧 FIX: Keep debug info
           _debug: {
             originalImageUrl: data.productImageUrl,
             finalImageUrl: getProductImageUrl(data.productImageUrl)
@@ -204,8 +201,8 @@ export default function MerchandiseDetail() {
 
         setProduct(transformed);
       } catch (error) {
-        console.error("Lỗi gọi API:", error);
-        message.error("Không thể tải sản phẩm.");
+        console.error("API error:", error);
+        message.error("Unable to load product.");
       } finally {
         setLoading(false);
       }
@@ -214,7 +211,7 @@ export default function MerchandiseDetail() {
     fetchProduct();
   }, [productId]);
 
-  // Lấy feedback của sản phẩm dựa trên productId từ URL params
+  // Get product feedback based on productId from URL params
   useEffect(() => {
     const fetchFeedbacks = async () => {
       if (!productId) {
@@ -229,14 +226,14 @@ export default function MerchandiseDetail() {
         console.log("Received feedback data:", feedbackData);
         setFeedbacks(feedbackData || []);
       } catch (error) {
-        console.error("Lỗi khi lấy feedback:", error);
-        // Không hiển thị error message cho feedback vì có thể chưa có feedback nào
+        console.error("Error fetching feedback:", error);
+        // Don't show error message for feedback as there might be no feedback yet
       } finally {
         setLoadingFeedback(false);
       }
     };
 
-    // Chỉ gọi API khi có productId từ URL params
+    // Only call API when productId exists from URL params
     if (productId) {
       fetchFeedbacks();
     }
@@ -249,11 +246,11 @@ export default function MerchandiseDetail() {
       setSubmittingFeedback(true);
       await submitFeedback(productId, values.comment, values.rating);
 
-      message.success("Cảm ơn bạn đã đánh giá sản phẩm!");
+      message.success("Thank you for reviewing this product!");
       form.resetFields();
       setIsModalVisible(false);
 
-      // Reload feedback sau khi submit thành công với productId từ URL params
+      // Reload feedback after successful submission with productId from URL params
       if (productId) {
         const updatedFeedbacks = await getFeedbackByProductId(productId);
         setFeedbacks(updatedFeedbacks || []);
@@ -262,13 +259,13 @@ export default function MerchandiseDetail() {
     } catch (error) {
       const errorMessage = (error as Error).message;
 
-      // Xử lý lỗi authentication đặc biệt
-      if (errorMessage.includes("đăng nhập")) {
+      // Handle authentication errors specifically
+      if (errorMessage.includes("login")) {
         message.error(errorMessage);
-        // Có thể redirect đến trang login
+        // Can redirect to login page
         // navigate('/login');
       } else {
-        message.error("Có lỗi xảy ra khi gửi đánh giá.");
+        message.error("An error occurred while submitting review.");
       }
     } finally {
       setSubmittingFeedback(false);
@@ -276,12 +273,12 @@ export default function MerchandiseDetail() {
   };
 
   const showFeedbackModal = () => {
-    // Kiểm tra xem user đã đăng nhập chưa
+    // Check if user is logged in
     const token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('accessToken');
 
     if (!token) {
-      message.warning("Bạn cần đăng nhập để gửi đánh giá sản phẩm.");
-      // Có thể redirect đến trang login
+      message.warning("You need to login to submit product reviews.");
+      // Can redirect to login page
       // navigate('/login');
       return;
     }
@@ -311,7 +308,7 @@ export default function MerchandiseDetail() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN', {
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -320,40 +317,40 @@ export default function MerchandiseDetail() {
     });
   };
 
-const handleAddToCart = async () => {
-  setLoading(true);
-  try {
-    // Use VITE_BASE_URL from environment variables, fallback to localhost
-    const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:5173';
+  const handleAddToCart = async () => {
+    setLoading(true);
+    try {
+      // Use VITE_BASE_URL from environment variables, fallback to localhost
+      const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:5173';
 
-    const paymentData = {
-      amount: 10000,
-      description: 'Nạp tiền vào tài khoản',
-      returnUrl: `${baseUrl}/products`,
-      cancelUrl: `${baseUrl}/products`,
-    };
+      const paymentData = {
+        amount: 10000,
+        description: 'Top up account',
+        returnUrl: `${baseUrl}/products`,
+        cancelUrl: `${baseUrl}/products`,
+      };
 
-    console.log('Payment data:', paymentData);
+      console.log('Payment data:', paymentData);
 
-    const response = await createPaymentLink(paymentData);
+      const response = await createPaymentLink(paymentData);
 
-    if (!response.checkoutUrl) {
-      throw new Error('Không tìm thấy URL thanh toán.');
+      if (!response.checkoutUrl) {
+        throw new Error('Payment URL not found.');
+      }
+
+      localStorage.setItem('pendingAmount', paymentData.amount.toString());
+      message.success('Redirecting to payment page...');
+
+      setTimeout(() => {
+        window.location.href = response.checkoutUrl;
+      }, 1000);
+    } catch (error) {
+      console.error('Error creating payment link:', error);
+      message.error((error as Error).message || 'An error occurred while creating payment link.');
+    } finally {
+      setLoading(false);
     }
-
-    localStorage.setItem('pendingAmount', paymentData.amount.toString());
-    message.success('Đang chuyển hướng đến trang thanh toán...');
-
-    setTimeout(() => {
-      window.location.href = response.checkoutUrl;
-    }, 1000);
-  } catch (error) {
-    console.error('Lỗi khi tạo link thanh toán:', error);
-    message.error((error as Error).message || 'Có lỗi xảy ra khi tạo link thanh toán.');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleBack = () => {
     navigate(-1);
@@ -368,21 +365,21 @@ const handleAddToCart = async () => {
   }
 
   if (!product) {
-    return <div className="text-center text-gray-500">Không tìm thấy sản phẩm.</div>;
+    return <div className="text-center text-gray-500">Product not found.</div>;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 p-6 font-pixel mt-20">
       <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl border border-pink-100 p-8">
-        {/* Nút Back */}
+        {/* Back Button */}
         <Button
           onClick={handleBack}
           className="mb-4 bg-white border border-pink-200 text-pink-600 hover:bg-pink-50 font-bold rounded-full shadow px-4 py-2 transition-all"
         >
-          ← Quay lại
+          ← Back
         </Button>
 
-        {/* 🔧 FIX: Enhanced image with proper error handling */}
+        {/* Enhanced image with proper error handling */}
         <img
           src={product.image}
           alt={product.name}
@@ -396,7 +393,7 @@ const handleAddToCart = async () => {
             console.error(`❌ Failed URL: ${product.image}`);
             console.error(`❌ Original API URL: ${product._debug?.originalImageUrl}`);
 
-            // Fallback to your existing tshirt image
+            // Fallback to existing tshirt image
             const target = e.target as HTMLImageElement;
             target.src = tshirt;
           }}
@@ -405,7 +402,7 @@ const handleAddToCart = async () => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-3xl font-bold text-pink-600">{product.name}</h1>
-            <p className="text-sm text-gray-400">Loại Sản Phẩm: {product.category}</p>
+            <p className="text-sm text-gray-400">Product Type: {product.category}</p>
           </div>
 
           {product.isNew && (
@@ -435,7 +432,7 @@ const handleAddToCart = async () => {
           </div>
 
           <p className="text-sm mt-2 text-gray-500">
-            Còn lại: <span className="font-bold text-blue-600">{product.quantity}</span> sản phẩm
+            Remaining: <span className="font-bold text-blue-600">{product.quantity}</span> products
           </p>
         </div>
 
@@ -447,7 +444,7 @@ const handleAddToCart = async () => {
             icon={<ShoppingCart className="w-5 h-5" />}
             disabled={product.quantity === 0}
           >
-            {product.quantity === 0 ? "Hết hàng" : "Buy Now"}
+            {product.quantity === 0 ? "Out of stock" : "Buy Now"}
           </Button>
 
           <Button
@@ -463,19 +460,19 @@ const handleAddToCart = async () => {
         <div className="border-t border-pink-100 pt-6">
           <h2 className="text-2xl font-bold text-pink-600 mb-4 flex items-center gap-2">
             <MessageCircle className="w-6 h-6" />
-            Đánh giá từ khách hàng ({feedbacks.length})
+            Customer Reviews ({feedbacks.length})
           </h2>
 
           {loadingFeedback ? (
             <div className="text-center py-8">
               <Spin />
-              <p className="mt-2 text-gray-500">Đang tải đánh giá...</p>
+              <p className="mt-2 text-gray-500">Loading reviews...</p>
             </div>
           ) : feedbacks.length === 0 ? (
             <div className="text-center py-8 bg-gray-50 rounded-2xl">
               <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-              <p className="text-gray-500">Chưa có đánh giá nào cho sản phẩm này.</p>
-              <p className="text-sm text-gray-400">Hãy là người đầu tiên đánh giá!</p>
+              <p className="text-gray-500">No reviews for this product yet.</p>
+              <p className="text-sm text-gray-400">Be the first to review!</p>
             </div>
           ) : (
             <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -493,7 +490,7 @@ const handleAddToCart = async () => {
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <p className="font-semibold text-gray-800">
-                            {feedback.userName || "Khách hàng"}
+                            {feedback.userName || "Customer"}
                           </p>
                           <div className="flex items-center gap-2">
                             <Rate
@@ -523,7 +520,7 @@ const handleAddToCart = async () => {
 
         {/* Feedback Modal */}
         <Modal
-          title="Đánh giá sản phẩm"
+          title="Rate Product"
           open={isModalVisible}
           onCancel={handleCancelModal}
           footer={null}
@@ -538,23 +535,23 @@ const handleAddToCart = async () => {
           >
             <Form.Item
               name="rating"
-              label="Đánh giá"
-              rules={[{ required: true, message: "Vui lòng chọn số sao!" }]}
+              label="Rating"
+              rules={[{ required: true, message: "Please select rating!" }]}
             >
               <Rate />
             </Form.Item>
 
             <Form.Item
               name="comment"
-              label="Nhận xét"
+              label="Comment"
               rules={[
-                { required: true, message: "Vui lòng nhập nhận xét!" },
-                { min: 10, message: "Nhận xét phải có ít nhất 10 ký tự!" }
+                { required: true, message: "Please enter comment!" },
+                { min: 10, message: "Comment must be at least 10 characters!" }
               ]}
             >
               <TextArea
                 rows={4}
-                placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
+                placeholder="Share your experience with this product..."
                 maxLength={500}
                 showCount
               />
@@ -565,7 +562,7 @@ const handleAddToCart = async () => {
                 onClick={handleCancelModal}
                 className="mr-2"
               >
-                Hủy
+                Cancel
               </Button>
               <Button
                 type="primary"
@@ -573,7 +570,7 @@ const handleAddToCart = async () => {
                 loading={submittingFeedback}
                 className="bg-pink-500 hover:bg-pink-600 border-none"
               >
-                Gửi đánh giá
+                Submit Review
               </Button>
             </Form.Item>
           </Form>

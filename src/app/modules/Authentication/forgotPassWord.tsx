@@ -13,14 +13,14 @@ export default async function forgotPassword(email) {
         });
 
         if (!response.ok) {
-            throw new Error("Gửi yêu cầu đặt lại mật khẩu thất bại. Vui lòng kiểm tra lại email.");
+            throw new Error("Failed to send password reset request. Please check your email address.");
         }
 
         const data = await response.json();
-        message.success("Đã gửi liên kết đặt lại mật khẩu đến email của bạn.");
+        message.success("Password reset link has been sent to your email.");
         return data;
     } catch (error) {
-        message.error(error.message || "Có lỗi xảy ra khi gửi yêu cầu đặt lại mật khẩu.");
+        message.error(error.message || "An error occurred while sending password reset request.");
         throw error;
     }
 }

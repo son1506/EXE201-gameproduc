@@ -25,7 +25,7 @@ export default function VerifyRegisterPage() {
     const { accountName, accountPassword, verificationToken } = formData;
 
     if (!accountName || !accountPassword) {
-      message.warning("Vui lòng điền đầy đủ thông tin.");
+      message.warning("Please fill in all information.");
       return;
     }
 
@@ -37,15 +37,15 @@ export default function VerifyRegisterPage() {
     try {
       await verifyRegisterAccount(accountName, accountPassword, verificationToken);
 
-      // ✅ Lưu thông tin đăng nhập
+      // ✅ Save login information
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("accountName", accountName);
 
-      message.success("Xác minh thành công. Bạn đã được đăng nhập.");
-      navigate("/"); // hoặc navigate("/dashboard") nếu có
+      message.success("Verification successful. You have been logged in.");
+      navigate("/"); // or navigate("/dashboard") if available
     } catch (error) {
-      console.error("Xác minh lỗi:", error);
-      message.error(error.message || "Có lỗi xảy ra khi xác minh đăng ký.");
+      console.error("Verification error:", error);
+      message.error(error.message || "An error occurred during registration verification.");
     }
   };
 

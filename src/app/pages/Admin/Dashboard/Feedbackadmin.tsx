@@ -32,15 +32,15 @@ const { Search: AntSearch } = Input;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-// API function để lấy tất cả feedback
+// API function to get all feedback
 const getAllFeedbacks = async () => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-  // Lấy token từ localStorage
+  // Get token from localStorage
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('accessToken');
 
   if (!token) {
-    throw new Error("Bạn cần đăng nhập để xem danh sách feedback.");
+    throw new Error("You need to login to view feedback list.");
   }
 
   try {
@@ -61,13 +61,13 @@ const getAllFeedbacks = async () => {
 
     if (!response.ok) {
       if (response.status === 401) {
-        throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+        throw new Error("Session expired. Please login again.");
       }
       if (response.status === 403) {
-        throw new Error("Bạn không có quyền truy cập chức năng này.");
+        throw new Error("You don't have permission to access this feature.");
       }
       const errorText = await response.text();
-      throw new Error(`Lỗi ${response.status}: ${errorText}`);
+      throw new Error(`Error ${response.status}: ${errorText}`);
     }
 
     const result = await response.json();
@@ -79,11 +79,11 @@ const getAllFeedbacks = async () => {
   }
 };
 
-// API function để lấy thông tin sản phẩm theo ID
+// API function to get product information by ID
 const getProductById = async (productId: string) => {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-  // Lấy token từ localStorage
+  // Get token from localStorage
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('accessToken');
 
   try {
@@ -96,7 +96,7 @@ const getProductById = async (productId: string) => {
       "Accept": "*/*"
     };
 
-    // Thêm Authorization header nếu có token
+    // Add Authorization header if token exists
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
@@ -130,7 +130,7 @@ interface Feedback {
   comment: string;
   rating: number;
   createdAt: string;
-  // Optional fields có thể có từ API khác
+  // Optional fields that may come from other APIs
   userName?: string;
   userEmail?: string;
   productName?: string;
@@ -147,12 +147,12 @@ export default function FeedbackAdmin() {
   const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  // Fetch tất cả feedback khi component mount
+  // Fetch all feedback when component mounts
   useEffect(() => {
     fetchAllFeedbacks();
   }, []);
 
-  // Enrich feedbacks với thông tin sản phẩm
+  // Enrich feedbacks with product information
   useEffect(() => {
     const enrichFeedbacksWithProductInfo = async () => {
       if (feedbacks.length === 0) return;
@@ -178,13 +178,13 @@ export default function FeedbackAdmin() {
       setFeedbacks(enrichedFeedbacks);
     };
 
-    // Chỉ enrich nếu feedbacks chưa có productName
+    // Only enrich if feedbacks don't already have productName
     if (feedbacks.length > 0 && !feedbacks[0].productName) {
       enrichFeedbacksWithProductInfo();
     }
   }, [feedbacks]);
 
-  // Filter feedbacks khi có thay đổi
+  // Filter feedbacks when there are changes
   useEffect(() => {
     filterFeedbacks();
   }, [feedbacks, searchText, ratingFilter, dateRange]);
@@ -194,7 +194,7 @@ export default function FeedbackAdmin() {
       setLoading(true);
       const data = await getAllFeedbacks();
 
-      // Set feedback data trước, sau đó sẽ enrich với product info
+      // Set feedback data first, then enrich with product info
       setFeedbacks(data || []);
     } catch (error) {
       const errorMessage = (error as Error).message;
@@ -208,7 +208,7 @@ export default function FeedbackAdmin() {
   const filterFeedbacks = () => {
     let filtered = [...feedbacks];
 
-    // Filter theo search text
+    // Filter by search text
     if (searchText) {
       filtered = filtered.filter(feedback =>
         feedback.comment?.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -219,12 +219,12 @@ export default function FeedbackAdmin() {
       );
     }
 
-    // Filter theo rating
+    // Filter by rating
     if (ratingFilter !== null) {
       filtered = filtered.filter(feedback => feedback.rating === ratingFilter);
     }
 
-    // Filter theo date range
+    // Filter by date range
     if (dateRange) {
       const [startDate, endDate] = dateRange;
       filtered = filtered.filter(feedback => {
@@ -281,7 +281,7 @@ export default function FeedbackAdmin() {
 
   const columns: ColumnsType<Feedback> = [
     {
-      title: 'Người dùng',
+      title: 'User',
       dataIndex: 'accountId',
       key: 'accountId',
       width: 150,
@@ -289,7 +289,7 @@ export default function FeedbackAdmin() {
         <div className="flex items-center gap-2">
           <Avatar icon={<User />} size="small" className="bg-blue-100 text-blue-600" />
           <div>
-            <div className="font-medium">{record.userName || 'Khách hàng'}</div>
+            <div className="font-medium">{record.userName || 'Customer'}</div>
             <div className="text-xs text-gray-500">ID: {accountId}</div>
             {record.userEmail && (
               <div className="text-xs text-gray-500">{record.userEmail}</div>
@@ -299,7 +299,7 @@ export default function FeedbackAdmin() {
       ),
     },
     {
-      title: 'Sản phẩm',
+      title: 'Product',
       dataIndex: 'productId',
       key: 'productId',
       width: 200,
@@ -311,7 +311,7 @@ export default function FeedbackAdmin() {
       ),
     },
     {
-      title: 'Đánh giá',
+      title: 'Rating',
       dataIndex: 'rating',
       key: 'rating',
       width: 120,
@@ -324,7 +324,7 @@ export default function FeedbackAdmin() {
       sorter: (a, b) => a.rating - b.rating,
     },
     {
-      title: 'Nhận xét',
+      title: 'Comment',
       dataIndex: 'comment',
       key: 'comment',
       ellipsis: true,
@@ -335,7 +335,7 @@ export default function FeedbackAdmin() {
       ),
     },
     {
-      title: 'Ngày tạo',
+      title: 'Created Date',
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: 150,
@@ -349,7 +349,7 @@ export default function FeedbackAdmin() {
       defaultSortOrder: 'descend',
     },
     {
-      title: 'Thao tác',
+      title: 'Actions',
       key: 'actions',
       width: 100,
       render: (_, record: Feedback) => (
@@ -360,23 +360,6 @@ export default function FeedbackAdmin() {
             onClick={() => showFeedbackDetail(record)}
             className="text-blue-600 hover:bg-blue-50"
           />
-          {/* <Button
-            type="text"
-            icon={<Trash2 className="w-4 h-4" />}
-            className="text-red-600 hover:bg-red-50"
-            onClick={() => {
-              Modal.confirm({
-                title: 'Xóa feedback',
-                content: 'Bạn có chắc chắn muốn xóa feedback này?',
-                okText: 'Xóa',
-                cancelText: 'Hủy',
-                okType: 'danger',
-                onOk() {
-                  message.info('Chức năng xóa sẽ được triển khai sau');
-                },
-              });
-            }}
-          /> */}
         </Space>
       ),
     },
@@ -393,8 +376,8 @@ export default function FeedbackAdmin() {
                 <MessageCircle className="w-6 h-6 text-blue-600" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-800">Quản lý Feedback</h1>
-                <p className="text-gray-500">Xem và quản lý tất cả đánh giá từ khách hàng</p>
+                <h1 className="text-2xl font-bold text-gray-800">Feedback Management</h1>
+                <p className="text-gray-500">View and manage all customer reviews</p>
               </div>
             </div>
             <Button
@@ -403,7 +386,7 @@ export default function FeedbackAdmin() {
               loading={loading}
               className="bg-blue-500 hover:bg-blue-600 text-white border-none"
             >
-              Làm mới
+              Refresh
             </Button>
           </div>
         </div>
@@ -414,10 +397,10 @@ export default function FeedbackAdmin() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Search className="w-4 h-4 inline mr-1" />
-                Tìm kiếm
+                Search
               </label>
               <AntSearch
-                placeholder="Tìm theo tên, email, sản phẩm..."
+                placeholder="Search by name, email, product..."
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onSearch={handleSearch}
@@ -428,27 +411,27 @@ export default function FeedbackAdmin() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Filter className="w-4 h-4 inline mr-1" />
-                Lọc theo rating
+                Filter by rating
               </label>
               <Select
-                placeholder="Chọn rating"
+                placeholder="Choose rating"
                 value={ratingFilter}
                 onChange={handleRatingFilter}
                 allowClear
                 className="w-full"
               >
-                <Option value={5}>⭐⭐⭐⭐⭐ (5 sao)</Option>
-                <Option value={4}>⭐⭐⭐⭐ (4 sao)</Option>
-                <Option value={3}>⭐⭐⭐ (3 sao)</Option>
-                <Option value={2}>⭐⭐ (2 sao)</Option>
-                <Option value={1}>⭐ (1 sao)</Option>
+                <Option value={5}>⭐⭐⭐⭐⭐ (5 stars)</Option>
+                <Option value={4}>⭐⭐⭐⭐ (4 stars)</Option>
+                <Option value={3}>⭐⭐⭐ (3 stars)</Option>
+                <Option value={2}>⭐⭐ (2 stars)</Option>
+                <Option value={1}>⭐ (1 star)</Option>
               </Select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Calendar className="w-4 h-4 inline mr-1" />
-                Lọc theo ngày
+                Filter by date
               </label>
               <RangePicker
                 value={dateRange}
@@ -463,7 +446,7 @@ export default function FeedbackAdmin() {
                 onClick={clearFilters}
                 className="w-full"
               >
-                Xóa bộ lọc
+                Clear filters
               </Button>
             </div>
           </div>
@@ -473,25 +456,25 @@ export default function FeedbackAdmin() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <Card className="text-center shadow-sm border border-gray-100">
             <div className="text-2xl font-bold text-blue-600">{filteredFeedbacks.length}</div>
-            <div className="text-sm text-gray-500">Tổng feedback</div>
+            <div className="text-sm text-gray-500">Total feedback</div>
           </Card>
           <Card className="text-center shadow-sm border border-gray-100">
             <div className="text-2xl font-bold text-green-600">
               {filteredFeedbacks.filter(f => f.rating >= 4).length}
             </div>
-            <div className="text-sm text-gray-500">Đánh giá tốt (4-5⭐)</div>
+            <div className="text-sm text-gray-500">Good reviews (4-5⭐)</div>
           </Card>
           <Card className="text-center shadow-sm border border-gray-100">
             <div className="text-2xl font-bold text-orange-600">
               {filteredFeedbacks.filter(f => f.rating === 3).length}
             </div>
-            <div className="text-sm text-gray-500">Đánh giá trung bình (3⭐)</div>
+            <div className="text-sm text-gray-500">Average reviews (3⭐)</div>
           </Card>
           <Card className="text-center shadow-sm border border-gray-100">
             <div className="text-2xl font-bold text-red-600">
               {filteredFeedbacks.filter(f => f.rating <= 2).length}
             </div>
-            <div className="text-sm text-gray-500">Đánh giá kém (1-2⭐)</div>
+            <div className="text-sm text-gray-500">Poor reviews (1-2⭐)</div>
           </Card>
         </div>
 
@@ -507,7 +490,7 @@ export default function FeedbackAdmin() {
               showSizeChanger: true,
               showQuickJumper: true,
               showTotal: (total, range) =>
-                `${range[0]}-${range[1]} của ${total} feedback`,
+                `${range[0]}-${range[1]} of ${total} feedback`,
             }}
             scroll={{ x: 1000 }}
             className="custom-table"
@@ -516,12 +499,12 @@ export default function FeedbackAdmin() {
 
         {/* Feedback Detail Modal */}
         <Modal
-          title="Chi tiết Feedback"
+          title="Feedback Detail"
           open={isModalVisible}
           onCancel={handleModalClose}
           footer={[
             <Button key="close" onClick={handleModalClose}>
-              Đóng
+              Close
             </Button>
           ]}
           width={600}
@@ -530,22 +513,22 @@ export default function FeedbackAdmin() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Người dùng</label>
-                  <p className="mt-1">{selectedFeedback.userName || 'Khách hàng'}</p>
+                  <label className="text-sm font-medium text-gray-500">User</label>
+                  <p className="mt-1">{selectedFeedback.userName || 'Customer'}</p>
                   <p className="text-sm text-gray-500">Account ID: {selectedFeedback.accountId}</p>
                   {selectedFeedback.userEmail && (
                     <p className="text-sm text-gray-500">{selectedFeedback.userEmail}</p>
                   )}
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Sản phẩm</label>
+                  <label className="text-sm font-medium text-gray-500">Product</label>
                   <p className="mt-1">{selectedFeedback.productName || 'Unknown Product'}</p>
                   <p className="text-sm text-gray-500">Product ID: {selectedFeedback.productId}</p>
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-500">Đánh giá</label>
+                <label className="text-sm font-medium text-gray-500">Rating</label>
                 <div className="mt-1 flex items-center gap-2">
                   <Rate disabled value={selectedFeedback.rating} />
                   <span>{selectedFeedback.rating}/5</span>
@@ -553,14 +536,14 @@ export default function FeedbackAdmin() {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-500">Nhận xét</label>
+                <label className="text-sm font-medium text-gray-500">Comment</label>
                 <div className="mt-1 p-3 bg-gray-50 rounded-lg">
                   <p>{selectedFeedback.comment}</p>
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-500">Ngày tạo</label>
+                <label className="text-sm font-medium text-gray-500">Created Date</label>
                 <p className="mt-1">{formatDate(selectedFeedback.createdAt)}</p>
               </div>
             </div>

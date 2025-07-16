@@ -11,7 +11,7 @@ const Login: React.FC = () => {
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
-      message.warning("Vui lòng nhập đầy đủ email và mật khẩu!");
+      message.warning("Please enter both email and password!");
       return;
     }
 
@@ -20,28 +20,28 @@ const Login: React.FC = () => {
       const result = await loginAccount(email, password);
 
       if (result.success) {
-        // Lưu token và thông tin vào localStorage
-        localStorage.setItem("token", result.result); // result.result chứa JWT token
-        localStorage.setItem("authToken", result.result); // Backup với key khác
+        // Save token and information to localStorage
+        localStorage.setItem("token", result.result); // result.result contains JWT token
+        localStorage.setItem("authToken", result.result); // Backup with different key
         localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("accountName", email); // Lưu email làm accountName để đồng bộ với Header
+        localStorage.setItem("accountName", email); // Save email as accountName to sync with Header
         
-        message.success("Đăng nhập thành công!");
-        // Đảm bảo localStorage được cập nhật trước khi navigate
-        setTimeout(() => navigate("/"), 0); // Delay nhỏ để đảm bảo state được cập nhật
+        message.success("Login successful!");
+        // Ensure localStorage is updated before navigate
+        setTimeout(() => navigate("/"), 0); // Small delay to ensure state is updated
       } else {
-        message.error("Đăng nhập thất bại. Vui lòng thử lại.");
+        message.error("Login failed. Please try again.");
       }
     } catch (error) {
       console.error("Login error:", error);
-      message.error("Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập.");
+      message.error("Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoBack = () => {
-    navigate(-1); // quay lại trang trước đó
+    navigate(-1); // go back to previous page
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -53,7 +53,7 @@ const Login: React.FC = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-pink-200 via-pink-100 to-white">
       <div className="bg-white rounded-lg shadow-lg p-10 w-full max-w-md relative">
-        {/* Nút quay lại */}
+        {/* Back button */}
         <button
           onClick={handleGoBack}
           className="absolute left-4 top-4 text-pink-600 hover:text-pink-800 font-medium text-sm"
@@ -114,7 +114,7 @@ const Login: React.FC = () => {
             disabled={loading}
             className="w-full py-3 bg-pink-600 text-white font-bold rounded-md hover:bg-pink-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Đang đăng nhập..." : "Log in"}
+            {loading ? "Logging in..." : "Log in"}
           </button>
         </div>
 

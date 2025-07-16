@@ -105,7 +105,7 @@ export default function Merchandise() {
                             rating: (4.5 + Math.random() * 0.5).toFixed(1),
                             reviews: Math.floor(Math.random() * 200) + 50,
                             quantity: product.productQuantity,
-                            description: product.productDescription || 'Sản phẩm chính hãng Sweeties Dodging',
+                            description: product.productDescription || 'Official Sweeties Dodging merchandise',
                             isActive: product.isActive
                         }
                     })
@@ -114,7 +114,7 @@ export default function Merchandise() {
 
                 if (isMounted) {
                     setProducts(transformedProducts)
-                    message.success(`Đã tải ${transformedProducts.length} sản phẩm`)
+                    message.success(`Loaded ${transformedProducts.length} products`)
                 }
 
             } catch (error) {
@@ -122,11 +122,11 @@ export default function Merchandise() {
                 if (isMounted) {
                     // 🔥 FIXED: More specific error message
                     if (error.message?.includes('fetch')) {
-                        message.error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.')
+                        message.error('Cannot connect to server. Please check your internet connection.')
                     } else if (error.message?.includes('not an array')) {
-                        message.error('Dữ liệu từ server không đúng định dạng.')
+                        message.error('Invalid data format from server.')
                     } else {
-                        message.error('Không thể tải danh sách sản phẩm. Vui lòng thử lại sau.')
+                        message.error('Unable to load product list. Please try again later.')
                     }
                     setProducts([])
                 }
@@ -164,7 +164,7 @@ export default function Merchandise() {
             <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 flex justify-center items-center">
                 <div className="text-center">
                     <Spin size="large" />
-                    <p className="mt-4 text-lg text-gray-600">Đang tải sản phẩm...</p>
+                    <p className="mt-4 text-lg text-gray-600">Loading products...</p>
                 </div>
             </div>
         )
@@ -229,8 +229,8 @@ export default function Merchandise() {
                 <div className="max-w-6xl mx-auto">
                     {filteredProducts.length === 0 ? (
                         <div className="text-center text-gray-500 mt-8 bg-white/60 rounded-3xl p-12">
-                            <p className="text-xl mb-2">Không có sản phẩm nào trong danh mục này</p>
-                            <p className="text-sm">Hãy thử chọn danh mục khác!</p>
+                            <p className="text-xl mb-2">No products in this category</p>
+                            <p className="text-sm">Try selecting another category!</p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -291,7 +291,7 @@ export default function Merchandise() {
 
                                         <div className="mb-4">
                                             <span className="text-sm text-gray-500">
-                                                Còn lại: <span className="font-bold text-blue-600">{product.quantity}</span> sản phẩm
+                                                Remaining: <span className="font-bold text-blue-600">{product.quantity}</span> products
                                             </span>
                                         </div>
 
@@ -301,7 +301,7 @@ export default function Merchandise() {
                                             icon={<ShoppingCart className="w-5 h-5" />}
                                             disabled={product.quantity === 0}
                                         >
-                                            {product.quantity === 0 ? "Hết hàng" : "Xem chi tiết"}
+                                            {product.quantity === 0 ? "Out of stock" : "View details"}
                                         </Button>
                                     </div>
                                 </div>
@@ -316,7 +316,7 @@ export default function Merchandise() {
                                 size="large"
                                 className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white border-none rounded-full px-12 py-4 font-pixel text-xl font-bold shadow-xl transform hover:scale-105 transition-all duration-200"
                             >
-                                ✨ Xem thêm sản phẩm
+                                ✨ View more products
                             </Button>
                         </div>
                     )}

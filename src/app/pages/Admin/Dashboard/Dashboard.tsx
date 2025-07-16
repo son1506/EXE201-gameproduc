@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react"
 import { Table, Typography, Spin, message, Badge } from "antd"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts"
@@ -16,7 +15,7 @@ const generateFakeMonthlyRevenue = () => {
   const fakeData = []
   for (let day = 1; day <= today.getDate(); day++) {
     const date = new Date(year, month, day)
-    const orderCount = Math.floor(Math.random() * 4) // 0–3 đơn
+    const orderCount = Math.floor(Math.random() * 4) // 0–3 orders
     fakeData.push({
       date: date.toLocaleDateString(),
       amount: orderCount * 10000,
@@ -79,11 +78,11 @@ const PaymentDashboard = () => {
         setPaymentLinks(data)
         localStorage.setItem("paymentLinks", JSON.stringify(data))
       })
-      .catch(() => message.error("Không lấy được danh sách payment-links"))
+      .catch(() => message.error("Unable to get payment-links list"))
       .finally(() => setLoadingLinks(false))
   }, [])
 
-  // Thêm ngày hôm nay vào fakeMonthlyData nếu chưa có
+  // Add today to fakeMonthlyData if not exists
   useEffect(() => {
     const todayExists = fakeMonthlyData.some((item) => item.date === today)
     if (!todayExists) {
@@ -93,7 +92,7 @@ const PaymentDashboard = () => {
     }
   }, [fakeMonthlyData, today])
 
-  // Gộp real + fake chart
+  // Merge real + fake chart data
   const realChartData = paymentLinks
     .map((link) => ({
       date: new Date(link.createdAt).toLocaleDateString(),
@@ -178,48 +177,48 @@ const PaymentDashboard = () => {
               <Title level={2} className="!mb-0 !text-gray-800">
                 💰 Payment Dashboard
               </Title>
-              <Text className="text-gray-500">Thống kê doanh thu và đơn hàng</Text>
+              <Text className="text-gray-500">Revenue and order statistics</Text>
             </div>
           </div>
           <div className="flex items-center gap-2 mt-4">
             <Badge status="processing" />
-            <Text className="text-sm text-gray-600">Cập nhật lần cuối: {new Date().toLocaleString()}</Text>
+            <Text className="text-sm text-gray-600">Last updated: {new Date().toLocaleString()}</Text>
           </div>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard
-            title="Doanh thu hôm nay"
+            title="Today's Revenue"
             value={`${todayAmount.toLocaleString()} VND`}
             icon={<Wallet className="w-6 h-6 text-white" />}
             color="from-green-400 to-emerald-500"
-            subtitle="So với hôm qua"
+            subtitle="Compared to yesterday"
             trend={growthPercentage}
           />
 
           <StatCard
-            title="Tổng doanh thu tháng"
+            title="Total Monthly Revenue"
             value={`${totalAmount.toLocaleString()} VND`}
             icon={<TrendingUp className="w-6 h-6 text-white" />}
             color="from-blue-400 to-blue-600"
-            subtitle="Tháng hiện tại"
+            subtitle="Current month"
           />
 
           <StatCard
-            title="Đơn hàng hôm nay"
+            title="Today's Orders"
             value={todayOrders.toString()}
             icon={<ShoppingCart className="w-6 h-6 text-white" />}
             color="from-purple-400 to-purple-600"
-            subtitle="Đơn hàng mới"
+            subtitle="New orders"
           />
 
           <StatCard
-            title="Tổng đơn hàng"
+            title="Total Orders"
             value={totalOrders.toString()}
             icon={<Target className="w-6 h-6 text-white" />}
             color="from-orange-400 to-red-500"
-            subtitle="Tất cả đơn hàng"
+            subtitle="All orders"
           />
         </div>
 
@@ -233,8 +232,8 @@ const PaymentDashboard = () => {
                   <BarChart3 className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-800">Biểu đồ doanh thu theo ngày</h3>
-                  <p className="text-sm text-gray-500">Doanh thu hàng ngày trong tháng</p>
+                  <h3 className="text-lg font-bold text-gray-800">Daily Revenue Chart</h3>
+                  <p className="text-sm text-gray-500">Daily revenue for the month</p>
                 </div>
               </div>
 
@@ -278,24 +277,24 @@ const PaymentDashboard = () => {
                 <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
                   <TrendingUp className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-800">Xu hướng</h3>
+                <h3 className="text-lg font-bold text-gray-800">Trend</h3>
               </div>
 
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Trung bình/ngày</span>
+                  <span className="text-sm text-gray-600">Average/day</span>
                   <span className="font-bold text-gray-800">
                     {Math.round(totalAmount / mergedChartData.length).toLocaleString()} VND
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Ngày cao nhất</span>
+                  <span className="text-sm text-gray-600">Highest day</span>
                   <span className="font-bold text-green-600">
                     {Math.max(...mergedChartData.map((d) => d.amount)).toLocaleString()} VND
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Tổng giao dịch</span>
+                  <span className="text-sm text-gray-600">Total transactions</span>
                   <span className="font-bold text-blue-600">{totalOrders}</span>
                 </div>
               </div>
@@ -303,7 +302,7 @@ const PaymentDashboard = () => {
 
             {/* Mini Line Chart */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-              <h4 className="text-sm font-bold text-gray-800 mb-4">Xu hướng 7 ngày gần nhất</h4>
+              <h4 className="text-sm font-bold text-gray-800 mb-4">Last 7 days trend</h4>
               <div className="h-24">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={mergedChartData.slice(-7)}>
@@ -324,7 +323,7 @@ const PaymentDashboard = () => {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-gray-800">💳 Payment Links</h3>
-                <p className="text-sm text-gray-500">Danh sách các giao dịch thanh toán</p>
+                <p className="text-sm text-gray-500">List of payment transactions</p>
               </div>
             </div>
           </div>
@@ -338,7 +337,7 @@ const PaymentDashboard = () => {
                 pageSize: 10,
                 showSizeChanger: true,
                 showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} giao dịch`,
+                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} transactions`,
               }}
               className="!border-none"
               rowClassName="hover:bg-gray-50 transition-colors"

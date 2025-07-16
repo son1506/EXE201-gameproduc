@@ -10,14 +10,14 @@ const ForgotPassword: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!email.trim()) {
-      message.error("Vui lòng nhập địa chỉ email.");
+      message.error("Please enter email address.");
       return;
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      message.error("Vui lòng nhập địa chỉ email hợp lệ.");
+      message.error("Please enter a valid email address.");
       return;
     }
 
@@ -25,10 +25,10 @@ const ForgotPassword: React.FC = () => {
     try {
       await forgotPassword(email);
       setIsEmailSent(true);
-      message.success("Mã resetToken đã được gửi đến email của bạn!");
+      message.success("Reset token has been sent to your email!");
     } catch (error) {
       console.error("Forgot password error:", error);
-      message.error("Đã có lỗi xảy ra. Vui lòng thử lại.");
+      message.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -52,14 +52,14 @@ const ForgotPassword: React.FC = () => {
                 </svg>
               </div>
               <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                Email đã được gửi!
+                Email has been sent!
               </h1>
               <p className="text-gray-600 mb-6">
-                Chúng tôi đã gửi mã resetToken đặt lại mật khẩu đến địa chỉ email của bạn. 
-                Vui lòng kiểm tra hộp thư và nhấn vào liên kết trong email để đặt lại mật khẩu.
+                We have sent a password reset token to your email address. 
+                Please check your inbox and click the link in the email to reset your password.
               </p>
               <p className="text-sm text-gray-500 mb-8">
-                Không nhận được email? Hãy kiểm tra thư mục spam hoặc thử lại.
+                Didn't receive email? Check spam folder or try again.
               </p>
             </div>
             
@@ -71,14 +71,14 @@ const ForgotPassword: React.FC = () => {
                 }}
                 className="w-full py-3 bg-gray-100 text-gray-700 font-semibold rounded-md hover:bg-gray-200 transition"
               >
-                Gửi lại email
+                Resend email
               </button>
               
               <Link
                 to="/login"
                 className="block w-full py-3 bg-gray-100 text-gray-700 font-semibold rounded-md hover:bg-gray-200 transition text-center"
               >
-                Quay lại đăng nhập
+                Back to login
               </Link>
             </div>
           </div>
@@ -92,22 +92,22 @@ const ForgotPassword: React.FC = () => {
       <div className="bg-white rounded-lg shadow-lg p-10 w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-pink-600 mb-4">
-            Quên mật khẩu?
+            Forgot password?
           </h1>
           <p className="text-gray-600">
-            Đừng lo lắng! Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn mã resetToken để đặt lại mật khẩu.
+            Don't worry! Enter your email address and we will send you a reset token.
           </p>
         </div>
 
         <div className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Địa chỉ email
+              Email address
             </label>
             <input
               id="email"
               type="email"
-              placeholder="Nhập địa chỉ email của bạn"
+              placeholder="Enter your email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -131,19 +131,19 @@ const ForgotPassword: React.FC = () => {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Đang gửi...
+                Sending...
               </div>
             ) : (
-              "Gửi mã resetToken"
+              "Send reset token"
             )}
           </button>
         </div>
 
         <div className="mt-8 text-center">
           <p className="text-pink-600">
-            Nhớ mật khẩu rồi?{" "}
+            Remember your password?{" "}
             <Link to="/login" className="underline hover:text-pink-800 font-semibold">
-              Quay lại đăng nhập
+              Back to login
             </Link>
           </p>
         </div>

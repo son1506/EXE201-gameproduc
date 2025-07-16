@@ -12,14 +12,14 @@ export default async function resetPassword(requestToken, requestPassword) {
         });
 
         if (!response.ok) {
-            throw new Error("Đặt lại mật khẩu thất bại. Vui lòng kiểm tra lại token và mật khẩu.");
+            throw new Error("Password reset failed. Please check the token and password.");
         }
 
         const data = await response.json();
-        message.success("Đặt lại mật khẩu thành công!");
+        message.success("Password reset successful!");
         return data;
     } catch (error) {
-        message.error(error.message || "Có lỗi xảy ra khi đặt lại mật khẩu.");
+        message.error(error.message || "An error occurred while resetting password.");
         throw error;
     }
 }

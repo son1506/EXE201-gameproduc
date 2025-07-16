@@ -33,11 +33,11 @@ interface FormData {
 
 // Category options
 const categoryOptions = [
-  { value: 'apparel', label: '👕 Apparel (Quần áo)', color: '#f472b6' },
-  { value: 'accessories', label: '👑 Accessories (Phụ kiện)', color: '#8b5cf6' },
-  { value: 'collectibles', label: '🎁 Collectibles (Đồ sưu tập)', color: '#06b6d4' },
-  { value: 'keyring', label: '🔑 Keyring (Móc khóa)', color: '#10b981' },
-  { value: 'pin', label: '📌 Pin (Huy hiệu)', color: '#f59e0b' },
+  { value: 'apparel', label: '👕 Apparel (Clothing)', color: '#f472b6' },
+  { value: 'accessories', label: '👑 Accessories', color: '#8b5cf6' },
+  { value: 'collectibles', label: '🎁 Collectibles', color: '#06b6d4' },
+  { value: 'keyring', label: '🔑 Keyring', color: '#10b981' },
+  { value: 'pin', label: '📌 Pin (Badges)', color: '#f59e0b' },
 ];
 
 const ProductCRUD: React.FC = () => {
@@ -264,22 +264,6 @@ const ProductCRUD: React.FC = () => {
         <div className="mb-6 flex justify-between items-center">
           <h2 className="text-2xl font-semibold text-gray-700">Products List</h2>
           <div className="flex gap-3">
-            {/* <button
-              onClick={handleTestFirebase}
-              disabled={testingFirebase}
-              className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {testingFirebase ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Testing...
-                </>
-              ) : (
-                <>
-                  🔥 Test Firebase
-                </>
-              )}
-            </button> */}
             <button
               onClick={() => {
                 resetForm();
