@@ -38,6 +38,21 @@ export async function createPaymentLink(paymentData) {
       throw new Error("Không tìm thấy URL thanh toán trong phản hồi từ server.");
     }
 
+    // Lưu param fake vào localStorage
+    const fakeParam = {
+      orderCode: data.orderCode || (Date.now() + Math.floor(Math.random() * 1000)),
+      amount: Math.floor(paymentData.amount),
+      description: paymentData.description || "Thanh toán đơn hàng",
+      createdAt: new Date().toISOString(),
+    };
+    let fakeList = [];
+    try {
+      fakeList = JSON.parse(localStorage.getItem("fakePaymentParams") || "[]");
+    } catch (e) {
+      // ignore parse error
+    }
+    fakeList.unshift(fakeParam);
+    localStorage.setItem("fakePaymentParams", JSON.stringify(fakeList));
     message.success("Tạo link thanh toán thành công!");
     return data;
   } catch (error) {
