@@ -114,24 +114,36 @@ const PaymentDashboard = () => {
     } catch (e) {
       // ignore parse error
     }
-    // Hiển thị toàn bộ số liệu Daily Revenue Chart xuống bảng Payment Links
-    const fakeChartLinks = fakeMonthlyData.map((item, idx) => {
-      const [day, month, year] = item.date.split("/");
-      const hour = 8 + (idx % 10);
-      const minute = Math.floor(Math.random() * 60);
-      const second = Math.floor(Math.random() * 60);
-      const dateObj = new Date(Number(year), Number(month) - 1, Number(day), hour, minute, second);
-      const orderCode = `2025${Math.floor(1000000000000 + Math.random() * 9000000000000)}`;
-      const description = `Thanh toán đơn hàng #${orderCode}`;
-      return {
-        orderCode,
-        amount: item.amount,
-        description,
-        createdAt: dateObj.toISOString(),
-      };
+    const fakeChartLinks = fakeMonthlyData
+      .filter(item => {
+        const [,,year] = item.date.split("/");
+        return year === "2025";
+      })
+      .map((item, idx) => {
+        const [day, month, year] = item.date.split("/");
+        const hour = 8 + (idx % 10);
+        const minute = Math.floor(Math.random() * 60);
+        const second = Math.floor(Math.random() * 60);
+        const dateObj = new Date(Number(year), Number(month) - 1, Number(day), hour, minute, second);
+        const orderCode = `2025${Math.floor(1000000000000 + Math.random() * 9000000000000)}`;
+        const description = `Thanh toán đơn hàng #${orderCode}`;
+        return {
+          orderCode,
+          amount: item.amount,
+          description,
+          createdAt: dateObj.toISOString(),
+        };
+      });
+    // Giao dịch fake từ param sẽ đứng đầu bảng, sau đó là các giao dịch chart (năm 2025)
+    const param2025 = fakeList.filter(f => {
+      const d = new Date(f.createdAt);
+      return d.getFullYear() === 2025;
     });
-    // Giao dịch fake từ param sẽ đứng đầu bảng, sau đó là các giao dịch chart
-    const newData = [...fakeList, ...fakeChartLinks];
+    // Chỉ lấy các param có năm 2025, và fakeChartLinks cũng chỉ lấy năm 2025
+    const newData = [...param2025, ...fakeChartLinks].filter(link => {
+      const d = new Date(link.createdAt);
+      return d.getFullYear() === 2025;
+    });
     setPaymentLinks(newData);
     localStorage.setItem("paymentLinks", JSON.stringify(newData));
     setLoadingLinks(false);
