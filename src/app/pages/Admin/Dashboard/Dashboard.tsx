@@ -67,20 +67,75 @@ const PaymentDashboard = () => {
     return stored ? JSON.parse(stored) : generateFakeMonthlyRevenue()
   })
 
+  // Khi có param mới, cập nhật lại fakeMonthlyData trong localStorage để cộng amount vào đúng ngày
+  useEffect(() => {
+    let fakeList = [];
+    try {
+      fakeList = JSON.parse(localStorage.getItem("fakePaymentParams") || "[]");
+    } catch (e) {
+      // ignore parse error
+    }
+    if (!Array.isArray(fakeList) || fakeList.length === 0) return;
+    const stored = localStorage.getItem("fakeMonthlyData");
+    const monthly = stored ? JSON.parse(stored) : generateFakeMonthlyRevenue();
+    let changed = false;
+    // Cộng amount param vào đúng ngày
+    fakeList.forEach(f => {
+      const d = new Date(f.createdAt);
+      const dateStr = d.toLocaleDateString();
+      const idx = monthly.findIndex(item => item.date === dateStr);
+      if (idx !== -1) {
+        // Nếu chưa cộng param này vào thì cộng thêm đúng 10,000 VND
+        if (!monthly[idx].paramIds || !monthly[idx].paramIds.includes(f.orderCode)) {
+          monthly[idx].amount += 10000;
+          monthly[idx].paramIds = [...(monthly[idx].paramIds || []), f.orderCode];
+          changed = true;
+        }
+      } else {
+        // Nếu ngày chưa có thì thêm mới với amount 10,000 VND
+        monthly.push({ date: dateStr, amount: 10000, paramIds: [f.orderCode] });
+        changed = true;
+      }
+    });
+    if (changed) {
+      localStorage.setItem("fakeMonthlyData", JSON.stringify(monthly));
+      setFakeMonthlyData(monthly);
+    }
+  }, []);
+
   const today = new Date().toLocaleDateString()
 
   // Fetch payment links
   useEffect(() => {
-    setLoadingLinks(true)
-    fetch(`${BACKEND_URL}/api/payment-links`)
-      .then((res) => res.json())
-      .then((data) => {
-        setPaymentLinks(data)
-        localStorage.setItem("paymentLinks", JSON.stringify(data))
-      })
-      .catch(() => message.error("Unable to get payment-links list"))
-      .finally(() => setLoadingLinks(false))
-  }, [])
+    // Lấy param fake từ localStorage (mỗi lần thanh toán)
+    let fakeList = [];
+    try {
+      fakeList = JSON.parse(localStorage.getItem("fakePaymentParams") || "[]");
+    } catch (e) {
+      // ignore parse error
+    }
+    // Hiển thị toàn bộ số liệu Daily Revenue Chart xuống bảng Payment Links
+    const fakeChartLinks = fakeMonthlyData.map((item, idx) => {
+      const [day, month, year] = item.date.split("/");
+      const hour = 8 + (idx % 10);
+      const minute = Math.floor(Math.random() * 60);
+      const second = Math.floor(Math.random() * 60);
+      const dateObj = new Date(Number(year), Number(month) - 1, Number(day), hour, minute, second);
+      const orderCode = `2025${Math.floor(1000000000000 + Math.random() * 9000000000000)}`;
+      const description = `Thanh toán đơn hàng #${orderCode}`;
+      return {
+        orderCode,
+        amount: item.amount,
+        description,
+        createdAt: dateObj.toISOString(),
+      };
+    });
+    // Giao dịch fake từ param sẽ đứng đầu bảng, sau đó là các giao dịch chart
+    const newData = [...fakeList, ...fakeChartLinks];
+    setPaymentLinks(newData);
+    localStorage.setItem("paymentLinks", JSON.stringify(newData));
+    setLoadingLinks(false);
+  }, [fakeMonthlyData])
 
   // Add today to fakeMonthlyData if not exists
   useEffect(() => {
@@ -92,39 +147,24 @@ const PaymentDashboard = () => {
     }
   }, [fakeMonthlyData, today])
 
-  // Merge real + fake chart data
-  const realChartData = paymentLinks
-    .map((link) => ({
-      date: new Date(link.createdAt).toLocaleDateString(),
-      amount: 10000,
-    }))
-    .reduce((acc, cur) => {
-      const found = acc.find((item) => item.date === cur.date)
-      if (found) {
-        found.amount += cur.amount
-      } else {
-        acc.push({ ...cur })
-      }
-      return acc
-    }, [])
-
-  const mergedChartData = fakeMonthlyData.map((fake) => {
-    const real = realChartData.find((item) => item.date === fake.date)
-    return {
-      date: fake.date,
-      amount: fake.amount + (real?.amount || 0),
-    }
-  })
-
-  const totalAmount = mergedChartData.reduce((sum, item) => sum + item.amount, 0)
-  const todayAmount = mergedChartData.find((item) => item.date === today)?.amount || 0
-
-  const totalOrders = paymentLinks.length
-  const todayOrders = paymentLinks.filter((item) => new Date(item.createdAt).toLocaleDateString() === today).length
-
-  // Calculate growth percentage (fake calculation for demo)
-  const yesterdayAmount = mergedChartData[mergedChartData.length - 2]?.amount || 0
-  const growthPercentage = yesterdayAmount > 0 ? ((todayAmount - yesterdayAmount) / yesterdayAmount) * 100 : 0
+  // Số liệu dashboard lấy từ cả fake param và fakeMonthlyData
+  let fakeList = [];
+  try {
+    fakeList = JSON.parse(localStorage.getItem("fakePaymentParams") || "[]");
+  } catch (e) {
+    // ignore parse error
+  }
+  // mergedChartData chỉ lấy từ fakeMonthlyData đã được cộng đúng 10,000 VND/param ở useEffect
+  const mergedChartData = fakeMonthlyData;
+  const totalAmount = fakeMonthlyData.reduce((sum, item) => sum + item.amount, 0);
+  const todayAmount = fakeMonthlyData.find((item) => item.date === today)?.amount || 0;
+  // Đếm số đơn hôm nay dựa trên paramIds nếu có, mặc định là 1 nếu không có paramIds
+  const todayObj = fakeMonthlyData.find((item) => item.date === today);
+  const todayOrders = todayObj && todayObj.paramIds ? todayObj.paramIds.length : 1;
+  const totalOrders = fakeMonthlyData.reduce((sum, item) => sum + (item.paramIds ? item.paramIds.length : 1), 0);
+  // Trend
+  const yesterdayAmount = fakeMonthlyData[fakeMonthlyData.length - 2]?.amount || 0;
+  const growthPercentage = yesterdayAmount > 0 ? ((todayAmount - yesterdayAmount) / yesterdayAmount) * 100 : 0;
 
   const columns = [
     {
