@@ -138,7 +138,10 @@ const PaymentDashboard = () => {
     const param2025 = fakeList.filter(f => {
       const d = new Date(f.createdAt);
       return d.getFullYear() === 2025;
-    });
+    }).map(f => ({
+      ...f,
+      description: `Thanh toán đơn hàng #${f.orderCode}`
+    }));
     // Chỉ lấy các param có năm 2025, và fakeChartLinks cũng chỉ lấy năm 2025
     const newData = [...param2025, ...fakeChartLinks].filter(link => {
       const d = new Date(link.createdAt);
@@ -179,6 +182,46 @@ const PaymentDashboard = () => {
   const yesterdayAmount = fakeMonthlyData[fakeMonthlyData.length - 2]?.amount || 0;
   const growthPercentage = yesterdayAmount > 0 ? ((todayAmount - yesterdayAmount) / yesterdayAmount) * 100 : 0;
 
+  const handleDeletePayment = (orderCode) => {
+    // Xoá khỏi paymentLinks
+    const newLinks = paymentLinks.filter(link => link.orderCode !== orderCode);
+    setPaymentLinks(newLinks);
+    localStorage.setItem("paymentLinks", JSON.stringify(newLinks));
+
+    // Xoá khỏi fakePaymentParams nếu là param fake
+    let fakeParams = [];
+    try {
+      fakeParams = JSON.parse(localStorage.getItem("fakePaymentParams") || "[]");
+    } catch (e) {
+      // Ignore parse error
+    }
+    const newFakeParams = fakeParams.filter(f => f.orderCode !== orderCode);
+    localStorage.setItem("fakePaymentParams", JSON.stringify(newFakeParams));
+
+    // Cập nhật lại fakeMonthlyData (trừ amount và xoá paramId nếu có)
+    let monthly = [];
+    try {
+      monthly = JSON.parse(localStorage.getItem("fakeMonthlyData") || "[]");
+    } catch (e) {
+      // Ignore parse error
+    }
+    let changed = false;
+    for (let i = 0; i < monthly.length; i++) {
+      if (monthly[i].paramIds && monthly[i].paramIds.includes(orderCode)) {
+        monthly[i].amount = Math.max(0, monthly[i].amount - 10000);
+        monthly[i].paramIds = monthly[i].paramIds.filter(id => id !== orderCode);
+        changed = true;
+      }
+    }
+    if (changed) {
+      localStorage.setItem("fakeMonthlyData", JSON.stringify(monthly));
+      setFakeMonthlyData([...monthly]);
+    } else {
+      // Nếu không phải paramId, có thể là chart fake, chỉ cần cập nhật lại bảng
+      setFakeMonthlyData([...monthly]);
+    }
+  };
+
   const columns = [
     {
       title: "Order Code",
@@ -215,7 +258,19 @@ const PaymentDashboard = () => {
         </div>
       ),
     },
-  ]
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <button
+          className="text-red-500 hover:underline text-xs font-semibold px-2 py-1 rounded"
+          onClick={() => handleDeletePayment(record.orderCode)}
+        >
+          Cancel
+        </button>
+      ),
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-6">
@@ -301,8 +356,8 @@ const PaymentDashboard = () => {
                     </defs>
                     <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#6B7280" }} />
                     <YAxis
-                      domain={[10000, 100000]}
-                      ticks={[10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000]}
+                      domain={[10000, 1000000]}
+                      ticks={[10000, 50000, 100000, 200000, 500000, 750000, 1000000]}
                       axisLine={false}
                       tickLine={false}
                       tick={{ fontSize: 12, fill: "#6B7280" }}
