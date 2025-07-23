@@ -173,7 +173,8 @@ const PaymentDashboard = () => {
   // Đếm số đơn hôm nay dựa trên paramIds nếu có, mặc định là 1 nếu không có paramIds
   const todayObj = fakeMonthlyData.find((item) => item.date === today);
   const todayOrders = todayObj && todayObj.paramIds ? todayObj.paramIds.length : 1;
-  const totalOrders = fakeMonthlyData.reduce((sum, item) => sum + (item.paramIds ? item.paramIds.length : 1), 0);
+  // Đồng bộ totalOrders với số lượng giao dịch thực tế trong Payment Links
+  const totalOrders = paymentLinks.length;
   // Trend
   const yesterdayAmount = fakeMonthlyData[fakeMonthlyData.length - 2]?.amount || 0;
   const growthPercentage = yesterdayAmount > 0 ? ((todayAmount - yesterdayAmount) / yesterdayAmount) * 100 : 0;
