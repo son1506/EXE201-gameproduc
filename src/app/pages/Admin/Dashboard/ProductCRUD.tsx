@@ -5,7 +5,7 @@ import { message, Select } from 'antd';
 import ImageUpload from '../../../components/ImageUpload/ImageUpload';
 import { runFirebaseTest } from '../../../Utils/testFirebase';
 
-const API_BASE_URL = 'https://localhost:7188/api/Product';
+const API_BASE_URL = 'https://webdb-backend.azurewebsites.net/api/Product';
 const { Option } = Select;
 
 // Define Product interface
